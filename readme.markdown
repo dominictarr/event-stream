@@ -18,4 +18,34 @@ buffer or rate-limit or parallelize critical aspects of your event stream.
 
 Supporting this sort of programming is the purpose of this library.
 
-an EventStream must:
+[test are in event-stream_tests](https://github.com/dominictarr/event-stream_tests)
+
+[node Stream documentation](http://nodejs.org/api/streams.html)
+
+##Example
+
+###map
+
+`eventstream.map` takes an asyncronous function and turns it into an readable/writable EventStream
+it can be used to perform a transformation upon a stream before writing it to something.
+
+if error, `callback(error)` like normal. if you `callback()` (no args) the stream will not emit 
+anything from that map.
+
+the order that the stream emits data is not gaurenteed to be the same as data is written to it. 
+(that feature is forth coming)
+
+will not emit 'end' when all the maps are finished, but only when all maps are finished. 
+it is essential that each map does call the callback. with data, with an error or with no arguments.
+
+if the callback is called more than once, every call but the first will be ignored.
+
+''' js
+
+var es = require('event-stream')
+
+  es.map(function (data, callback) {
+    //do something to data
+    callback(null, data)   
+  })
+'''
