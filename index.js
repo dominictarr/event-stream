@@ -6,6 +6,11 @@
 
 var Stream = require('stream').Stream
 
+//filter will reemit the data if cb(err,pass) pass is truthy
+// reduce is more tricky
+// maybe we want to group the reductions or emit progress updates occasionally
+// the most basic reduce just emits one 'data' event after it has recieved 'end'
+
 exports.map = function (mapper) {
   var stream = new Stream()
     , inputs = 0
