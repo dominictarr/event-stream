@@ -19,7 +19,7 @@ exports.map = function (mapper) {
 
   stream.writable = true
   stream.readible = true
-    
+   
   stream.write = function () {
     inputs ++
     var args = [].slice.call(arguments)
@@ -30,8 +30,7 @@ exports.map = function (mapper) {
       outputs ++
       var args = [].slice.call(arguments)
       if(err)
-       return inNext = false, stream.emit('error')
-    
+       return inNext = false, stream.emit('error')    
       args.shift() //drop err
     
       if (args.length){
@@ -56,6 +55,7 @@ exports.map = function (mapper) {
       if(inNext)
         throw err
       next(err)
+      return true
     }
   }
 
@@ -65,9 +65,39 @@ exports.map = function (mapper) {
     ended = true //write will emit 'end' if ended is true
     if(args.length)
       return stream.write.apply(emitter, args)
-    else
+    else if (inputs == outputs) //wait for processing
       stream.emit('end')
   }
 
+  return stream
+}
+
+  //return a Stream that reads the properties of an object
+  //respecting pause() and resume()
+
+exports.read = function (array) {
+  var stream = new Stream()
+    , i = 0
+    , paused = false
+ 
+  stream.readable = true  
+  stream.writable = false
+ 
+  if(!Array.isArray(array))
+    throw new Error('event-stream.read expects an array')
+  
+  stream.open = function () {
+    paused = false
+    var l = array.length
+    while(i < l && !paused) {
+      stream.emit('data', array[i++])
+    }
+    if(i == l)
+      stream.emit('end'), stream.readible = false
+  }
+  stream.pause = function () {
+     paused = true
+  }
+  stream.resume = stream.open
   return stream
 }
