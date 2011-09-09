@@ -101,3 +101,57 @@ exports.read = function (array) {
   stream.resume = stream.open
   return stream
 }
+
+//
+// combine multiple streams together so that they act as a single stream
+//
+
+exports.pipe = function () {
+
+  var streams = [].slice.call(arguments)
+    , first = streams[0]
+    , last = streams[streams.length - 1]
+    , thepipe = new Stream() //this pipe of streams
+    
+  if(streams.length < 2)
+    throw new Error('pipe expects at least two streams to join together')
+
+  //pipe all the streams together
+
+  function recurse (streams) {
+    if(streams.length < 2)
+      return
+    streams[0].pipe(streams[1])
+    recurse(streams.slice(1))  
+  }
+  
+  recurse(streams)
+ 
+  function onerror () {
+    var args = [].slice.call(arguments)
+    args.unshift('error')
+    thepipe.emit.apply(thepipe, args)
+  }
+  
+  streams.forEach(function (stream) {
+    stream.on('error', onerror)
+  })
+
+  ;['write', 'writable', 'end', 'close', 'destroy', 'destroySoon'].forEach(function (prop) {
+    thepipe.__defineGetter__(prop, function () { return first[prop] })
+  })
+
+  ;['readible', 'resume', 'pause', 'destroy', 'destroySoon'].forEach(function (prop) {
+    thepipe.__defineGetter__(prop, function () { return last[prop] })
+  })
+
+  ;['data', 'end', 'close'].forEach(function (event) {
+    last.on(event, function () { 
+      var args = [].slice.call(arguments)
+      args.unshift(event)
+      thepipe.emit.apply(thepipe, args) 
+      })  
+  })
+
+  return thepipe
+}

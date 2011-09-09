@@ -1,10 +1,8 @@
 # EventStreams
 
-EventEmitters are a great idea, but are unfortunatly under utilized in the node community
-
-EventEmitters in node are a brilliant idea that unfortunatly are under utilized by the node community. 
-EventEmitters they are at the heart of all the IO in node core, reading from files, or TCP, or the body 
-of an http request or response is handled as a stream of events.
+EventEmitters in node are a brilliant idea that unfortunatly are under utilized by the node community.
+Yes, that is right. _under utilized_. there are many more things that EventEmitters could be used for, especially, 
+the `Stream`s, a subclass of EventEmitters.
 
 A stream of events is a bit like an array, but an array layed out in time, rather than in memory.
 
@@ -92,7 +90,7 @@ var es = require('event-stream')
 
 ### reduce
 
-combine all incomingdata together into one item which will be emitted on recieving end.
+combine all incoming data together into one item which will be emitted on recieving end.
 
 ### pipe
 
