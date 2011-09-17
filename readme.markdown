@@ -1,75 +1,86 @@
 # EventStreams
 
-EventEmitters in node are a brilliant idea that unfortunatly are under utilized by the node community.
-Yes, that is right. _under utilized_. there are many more things that EventEmitters could be used for, especially, 
-the `Stream`s, a subclass of EventEmitters.
+Streams are node's best and sadly misunderstood idea,  
+this is a toolkit to make creating and working with streams <em>easy</em>.
 
-A stream of events is a bit like an array, but an array layed out in time, rather than in memory.
+`Stream` is a subclass of `EventEmitter`, it adds one very useful function:
 
-You can apply a map function to an array and create a new array, you could apply a similar 
-map function to a stream of events to create a new stream. `map` functions, but also `fitler`, `reduce`
-and other functional programming idioms!
+``` js
+  readibleStream.pipe(writableStream)
 
-event streams are great because they have a naturally scalable API. 
-if the events in a stream can be stringified ane parsed then it will be relatively simple to split heavy 
-parts of a stream into seperate processes, and to incorperate middlewares into the stream that might 
-buffer or rate-limit or parallelize critical aspects of your event stream.
+  //if a stream is both readable and writable it can be pipe on again
+  
+  readibleStream.pipe(readableWritableStream)
+  readableWritableStream.pipe(writableStream)
 
-Supporting this sort of programming is the purpose of this library.
+  // just like on the command line!
+  // readibleStream | readableWritableStream | writableStream
+  //
+```
 
+the `event-stream` functions are just like the array functions,  
+because Streams are like Arrays, but laid out in time, rather in memory.
+
+###for example:
+
+``` js
+
+//pretty.js
+
+if(!module.parent) {
+  var es = require('..')              //load event-stream
+  es.pipe(                            //pipe joins streams together
+    process.openStdin(),              //open stdin
+    es.split(),                       //split stream to break on newlines
+    es.map(function (data, callback) {//turn this async function into a stream
+      callback(null
+        , inspect(JSON.parse(data)))  //render it nicely
+    }),
+    process.stdout                    // pipe it to stdout !
+    )
+  }
+  
+//curl -sS registry.npmjs.org/event-stream | node pretty.js
+
+```
+ 
 [test are in event-stream_tests](https://github.com/dominictarr/event-stream_tests)
 
 [node Stream documentation](http://nodejs.org/api/streams.html)
 
-##Examples
+##map
 
-###map
-
-Turns an asyncronous function it into an readable/writable EventStream
-it can be used to perform a transformation upon a stream before writing it to something.
-
-If error, `callback(error)` like normal. If you `callback()` (no args) the stream will not emit 
-anything from that map.
-
-`map` does not guarantee mapped output order will be the same an written input.
-
-`map` will hold off on emitting `end` until all of it's map callbacks are complete.
-
-Each map MUST call the callback. it may callback with data, with an error or with no arguments, 
+create a readable and writable stream from an asyncronous function.  
 
 ``` js
+var es = require('event-stream')
 
-  //callback mapped data
-  
-  callback(null, data) //may use multiple args, but first is always error
-    
-  //drop this peice of data
-  
-  callback()
-  
-  //if there was on error
-  
-  callback (error) //the event stream will emit 'error' instead of data for this step.
+es.map(function (data, callback) {
+  //transform data
+  // ...
+  callback(null, data)
+})
 
 ```
 
-if a callback is not called map will think that it is still being worked on.
+Each map MUST call the callback. it may callback with data, with an error or with no arguments, 
 
-If the callback is called more than once, every call but the first will be ignored.
+  * `callback()` drop this data.  
+    this makes the map work like `filter`,  
+    note:`callback(null,null)` is not the same, and will emit `null`
 
-''' js
+  * `callback(null, newData)` turn data into newData
+    
+  * `callback(error)` emit an error for this item.
 
-var es = require('event-stream')
+>Note: if a callback is not called map will think that it is still being worked on,   
+>every call must be answered or the stream will not know when to end.  
+>
+>also, if the callback is called more than once, every call but the first will be ignored.
 
-  es.map(function (data, callback) {
-    //do something to data
-    callback(null, data)   
-  })
-'''
+###readArray
 
-###read
-
-Makes an readable `EventStream` from an `Array`.
+makes a readable stream from an array.  
 
 Just emit each item as a data event, respecting `pause` and `resume`.
 

@@ -5,12 +5,12 @@
 
 
 var Stream = require('stream').Stream
-
+  , es = exports
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
 // mainly I'm using this to test the other functions
 
-exports.writeArray = function (done) {
+es.writeArray = function (done) {
   if ('function' !== typeof done)
     throw new Error('function writeArray (done): done must be function')
 
@@ -30,7 +30,7 @@ exports.writeArray = function (done) {
 //return a Stream that reads the properties of an object
 //respecting pause() and resume()
 
-exports.readArray = function (array) {
+es.readArray = function (array) {
   var stream = new Stream()
     , i = 0
     , paused = false
@@ -61,7 +61,7 @@ exports.readArray = function (array) {
 //emitting each response as data
 //unless it's an empty callback
 
-exports.map = function (mapper) {
+es.map = function (mapper) {
   var stream = new Stream()
     , inputs = 0
     , outputs = 0
@@ -126,7 +126,7 @@ exports.map = function (mapper) {
 // combine multiple streams together so that they act as a single stream
 //
 
-exports.pipe = function () {
+es.pipe = function () {
 
   var streams = [].slice.call(arguments)
     , first = streams[0]
@@ -176,7 +176,7 @@ exports.pipe = function () {
   return thepipe
 }
 
-exports.split = function (matcher) {
+es.split = function (matcher) {
   var stream = new Stream()
     , soFar = ''  
   
@@ -195,7 +195,6 @@ exports.split = function (matcher) {
         var n = soFar;
         soFar = '' 
         this.emit('data', n)
-        console.log('data',n)
       }
     i++
     }
@@ -207,4 +206,89 @@ exports.split = function (matcher) {
   }
 
   return stream
+}
+
+//
+// helper to make your module into a unix pipe
+// simply add 
+// 
+// if(!module.parent)
+//  require('event-stream').pipable(asyncFunctionOrStreams)
+// 
+// asyncFunctionOrStreams may be one or more Streams or if it is a function, 
+// it will be automatically wrapped in es.map
+//
+// then pipe stuff into from the command line!
+// 
+// curl registry.npmjs.org/event-stream | node hello-pipeable.js | grep whatever
+//
+// etc!
+//
+// also, start pipeable running as a server!
+//
+// > node hello-pipeable.js --port 44444
+// 
+
+var setup = function (args) {
+  return args.map(function (f) {
+    console.log(f)
+    var x = f()
+      if('function' === typeof x)
+        return es.map(x)
+      return x
+    })
+}
+
+es.pipeable = function () {
+  var opts = require('optimist').argv
+  var args = [].slice.call(arguments)
+  
+  if(opts.h || opts.help) {
+    var name = process.argv[1]
+    console.error([
+      'Usage:',
+      '',
+      'node ' + name + ' [options]',
+      '  --port PORT        turn this stream into a server',
+      '  --host HOST        host of server (localhost is default)',
+      '  --protocol         protocol http|net will require(protocol).createServer(...',
+      '  --help             display this message',
+      '',
+      ' if --port is not set, will stream input from stdin',
+      '',
+      'also, pipe from or to files:',
+      '',
+      ' node '+name+ ' < file    #pipe from file into this stream',
+      ' node '+name+ ' < infile > outfile    #pipe from file into this stream',     
+      '',
+    ].join('\n'))
+  
+  } else if (!opts.port) {
+    var streams = setup(args)
+    streams.unshift(es.split())
+    streams.unshift(process.openStdin())
+    streams.push(process.stdout)
+  
+    return es.pipe.apply(null, streams)
+
+  } else {
+  
+    opts.host = opts.host || 'localhost'
+    opts.protocol = opts.protocol || 'http'
+    
+    var protocol = require(opts.protocol)
+        
+    var server = protocol.createServer(function (instream, outstream) {  
+      var streams = setup(args)
+      streams.unshift(es.split())
+      streams.unshift(instream)
+      streams.push(outstream || instream)
+      console.error(streams)
+      es.pipe.apply(null, streams)
+    })
+    
+    server.listen(opts.port, opts.host)
+
+    console.error(process.argv[1] +' is listening for "' + opts.protocol + '" on ' + opts.host + ':' + opts.port)  
+  }
 }
