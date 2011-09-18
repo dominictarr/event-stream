@@ -68,7 +68,7 @@ es.map = function (mapper) {
     , ended = false
 
   stream.writable = true
-  stream.readible = true
+  stream.readable = true
    
   stream.write = function () {
     inputs ++
@@ -123,18 +123,34 @@ es.map = function (mapper) {
 }
 
 //
+// log just print out what is coming through the stream, for debugging
+//
+
+es.log = function (name) {
+  return es.map(function () {
+    var args = [].slice.call(arguments)
+    var cb = args.pop()
+    console.error(name, args)
+    args.unshift(null)
+    cb.apply(null, args)
+  })
+}
+
+//
 // combine multiple streams together so that they act as a single stream
 //
 
-es.pipe = function () {
+es.pipe = es.connect = function () {
 
   var streams = [].slice.call(arguments)
     , first = streams[0]
     , last = streams[streams.length - 1]
-    , thepipe = new Stream() //this pipe of streams
-    
-  if(streams.length < 2)
-    throw new Error('pipe expects at least two streams to join together')
+    , thepipe = es.duplex(first, last)
+
+  if(streams.length == 1)
+    return streams[0]
+  else if (!streams.length)
+    throw new Error('connect called with empty args')
 
   //pipe all the streams together
 
@@ -157,20 +173,63 @@ es.pipe = function () {
     stream.on('error', onerror)
   })
 
-  ;['write', 'writable', 'end', 'close', 'destroy', 'destroySoon'].forEach(function (prop) {
-    thepipe.__defineGetter__(prop, function () { return first[prop] })
+  return thepipe
+}
+
+//
+// child -- pipe through a child process
+//
+
+es.child = function (child) {
+
+  return es.duplex(child.stdin, child.stdout)
+
+}
+
+//
+// duplex -- pipe into one stream and out another
+//
+
+es.duplex = function (writer, reader) {
+  var thepipe = new Stream()
+
+  thepipe.__defineGetter__('writable', function () { return writer.writable })
+  thepipe.__defineGetter__('readable', function () { return reader.readable })
+
+  ;['write', 'end', 'close'].forEach(function (func) {
+    thepipe[func] = function () {
+      console.log(func, arguments)
+      return writer[func].apply(writer, arguments)
+    }
   })
 
-  ;['readible', 'resume', 'pause', 'destroy', 'destroySoon'].forEach(function (prop) {
-    thepipe.__defineGetter__(prop, function () { return last[prop] })
+  ;['resume', 'pause'].forEach(function (func) {
+    thepipe[func] = function () { 
+      thepipe.emit(func)
+      if(reader[func])
+        return reader[func].apply(reader, arguments)
+      else
+        reader.emit(func)
+    }
   })
 
-  ;['data', 'end', 'close'].forEach(function (event) {
-    last.on(event, function () { 
+  ;['data', 'close'].forEach(function (event) {
+    reader.on(event, function () {
       var args = [].slice.call(arguments)
+      console.error('!',event, args)
       args.unshift(event)
-      thepipe.emit.apply(thepipe, args) 
-      })  
+      thepipe.emit.apply(thepipe, args)
+    })
+  })
+  //only emit end once
+  var ended = false
+  reader.on('end', function () {
+    if(ended) return
+    ended = true
+    var args = [].slice.call(arguments)
+    console.error('END', args)
+    args.unshift('end')
+    thepipe.emit.apply(thepipe, args)
   })
 
   return thepipe
