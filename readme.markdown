@@ -163,37 +163,26 @@ create a through stream from a child process
 
 ```
 
-### emitterStream
+## sidestream (stream1,...,streamN)
 
-Sometimes a single input maps to many outputs. you would normally do this with a function that 
-returns an event emitter. 
-
-to make this more streamy, it is often only necessory to redirect a event to 'data'
-
-to make a readible stream it needs to emit 'data' and 'end'.
-
-to make a writable stream it needs to accept `write`, and possibly `end`
-
-emitterStream(
-  emitter, 
-  { write: inputMethodName, end: finishMethodName }, //inputs (if writable)
-  { data: outputEventName, end: finishEventName, error: errorEventName } //outputs (if readible)
-  ) //if omitted, default to thier standard names
-
-emitterStream(
-  findit(process.cwd(), 
-  null, //readible 
-  { data: 'directory' } //outputs. (findit already emits 'end' and 'error')
-)
+pipes the incoming stream to many writable streams.  
+remits the input stream.
 
 ``` js
-  // SubStack's findit recursively searches from a starting directory
-  // the findit function returns an EventEmitter that emits
-  // 'file', 'directory', and 'path' events.
-  
-  var findit = require('findit')
-  var findStream =  es.emitterStream(findit(process.cwd()), null, {data: 'path', end: 'end'})
-  findStream.pipe(nextStream)
+  es.sidestream( //will log the stream to a file
+    es.connect(
+      es.mapSync(function (j) {return JSON.stringify(j) + '/n'}),
+      fs.createWruteStream(file, {flags: 'a'})
+    )
+```
+
+# TODO
+
+## merge (stream1,...,streamN)
+
+create a readable stream that merges many streams into one
+
+(not implemented yet)
 
 ### another pipe example
 
