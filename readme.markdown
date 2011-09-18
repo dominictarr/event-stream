@@ -5,7 +5,7 @@ _<em>EventStream</em>_ is a toolkit to make creating and working with streams <e
 
 normally, streams are only used of IO,  
 but in event stream we send all kinds of object down the pipe,  
-so you can organize your whole application around them!  
+if the input and output of your application are streams, why not make the throughput of your application into a stream?  
 
 the `event-stream` functions resemble the the array functions,  
 because Streams are like Arrays, but laid out in time, rather in memory.  
@@ -14,7 +14,7 @@ because Streams are like Arrays, but laid out in time, rather in memory.
 
 [nodejs.org/api/streams](http://nodejs.org/api/streams.html "Stream")
 
-NOTE: I shall use the term <em>through stream</em> to refur to a stream that is both writable and readable.
+NOTE: I shall use the term <em>"through stream"</em> to refur to a stream that is both readable and writable.  
 
 ###[simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
 
@@ -34,9 +34,11 @@ if(!module.parent) {
     process.stdout                    // pipe it to stdout !
     )
   }
-  
-//curl -sS registry.npmjs.org/event-stream | node pretty.js
+```
+run it...
 
+``` bash  
+curl -sS registry.npmjs.org/event-stream | node pretty.js
 ```
  
 [test are in event-stream_tests](https://github.com/dominictarr/event-stream_tests)
@@ -68,7 +70,7 @@ Each map MUST call the callback. it may callback with data, with an error or wit
     
   * `callback(error)` emit an error for this item.
 
->Note: if a callback is not called map will think that it is still being worked on,   
+>Note: if a callback is not called, `map` will think that it is still being processed,   
 >every call must be answered or the stream will not know when to end.  
 >
 >also, if the callback is called more than once, every call but the first will be ignored.
@@ -122,29 +124,31 @@ example, read every line in a file
 ## connect (stream1,...,streamN)
 
 connect multiple Streams together into one stream.  
-`connect` will return a Stream. Writing to the pipe will write to the first stream,
-the pipe will emit data from the last stream. 
+`connect` will return a Stream. this stream will write to the first stream,
+and will emit data from the last stream. 
 
 listening for 'error' will recieve errors from all streams inside the pipe.
 
 ``` js
 
-  es.pipe(
-    es.emitterToStream(findit(startDir), null, {'file': 'data'}),
-    es.map(function (filename, callback) {
-      fs.readFile(filename, function (err, file) {
-        if (err) return callback(err)
-        callback(null, {_id: filename, content: file.toString()}) 
-      })
+  es.connect(                         //connect streams together with `pipe`
+    process.openStdin(),              //open stdin
+    es.split(),                       //split stream to break on newlines
+    es.map(function (data, callback) {//turn this async function into a stream
+      callback(null
+        , inspect(JSON.parse(data)))  //render it nicely
     }),
-    es.save.couch({database: 'example'}) //defaults to localhost:5984
-  )
-
+    process.stdout                    // pipe it to stdout !
+    )
 ```
 
 ## duplex
 
-take a writable stream, and a readable stream, and makes them appear as a readable writable stream. 
+take a writable stream, and a readable stream, and makes them appear as a readable writable stream.
+
+it is assumed that the two streams are connected to each other in some way.  
+
+(this is used by `connect`, and `child`.)
 
 ``` js
   var grep = cp.exec('grep Stream')
@@ -159,9 +163,12 @@ create a through stream from a child process
 ``` js
   var cp = require('child_process')
 
-  es.child(cp.exec('grep Stream')) // a throu
+  es.child(cp.exec('grep Stream')) // a through stream
 
 ```
+
+<!--
+TODO, the following methods are not implemented yet.
 
 ## sidestream (stream1,...,streamN)
 
@@ -176,8 +183,6 @@ remits the input stream.
     )
 ```
 
-# TODO
-
 ## merge (stream1,...,streamN)
 
 create a readable stream that merges many streams into one
@@ -186,12 +191,12 @@ create a readable stream that merges many streams into one
 
 ### another pipe example
 
-SEARCH SUBDIRECTORIES FROM CWD
-FILTER IF NOT A GIT REPO
-MAP TO GIT STATUS --porclean + the directory
-FILTER IF EMPTY STATUS
-process.stdout
-that will show all the repos which have unstaged changes
+SEARCH SUBDIRECTORIES FROM CWD  
+FILTER IF NOT A GIT REPO  
+MAP TO GIT STATUS --porclean + the directory  
+FILTER IF EMPTY STATUS  
+process.stdout  
+that will show all the repos which have unstaged changes  
 
 ## TODO & applications
 
@@ -211,4 +216,5 @@ that will show all the repos which have unstaged changes
     * search filesystem
     * scrape web pages (load pages, parse for links, etc)
     * module dependencies
-    
+  
+-->
