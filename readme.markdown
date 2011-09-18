@@ -167,6 +167,44 @@ create a through stream from a child process
 
 ```
 
+## pipeable (streamCreatorFunction,...)
+
+the arguments to pipable must be a functions that return  
+instances of Stream or async functions.  
+(if a function is returned, it will be turned into a Stream  
+with `es.map`.
+
+here is the first example rewritten to use `pipeable`
+
+``` js
+//examples/pretty_pipeable.js
+var inspect = require('util').inspect
+
+if(!module.parent)
+  require('event-stream').pipeable(function () {
+    return function (data, callback) {
+      try {
+        data = JSON.parse(data)
+      } catch (err) {}              //pass non JSON straight through!
+      callback(null, inspect(data))
+      }
+    })  
+  })
+```
+
+``` bash
+
+curl -sS registry.npmjs.org/event-stream | node pipeable_pretty.js
+
+## or, turn the pipe into a server!
+
+node pipeable_pretty.js --port 4646
+
+curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
+
+```
+
+
 <!--
 TODO, the following methods are not implemented yet.
 
