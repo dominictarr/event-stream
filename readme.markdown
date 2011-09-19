@@ -219,7 +219,7 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
     throttle streams on a bytes per second basis (binary streams only, of course)
     
   * https://github.com/mikeal/morestreams
-    chunk type agnostic stream buffering (will work with any object stream)
+    buffer input until connected to a pipe.
     
   * https://github.com/TooTallNate/node-gzip-stack
     compress and decompress raw streams.
@@ -234,7 +234,7 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
     general mechanisms for custom parsers
     
   * https://github.com/dodo/node-bufferstream
-    buffer streams until you say
+    buffer streams until you say (written in C)
 
   * https://github.com/tim-smart/node-filter
     `filter` pipeable string.replace

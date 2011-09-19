@@ -6,6 +6,9 @@
 
 var Stream = require('stream').Stream
   , es = exports
+
+es.Stream = Stream //re-export Stream from core
+
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
 // mainly I'm using this to test the other functions
@@ -265,6 +268,60 @@ es.split = function (matcher) {
   stream.end = function () {
     stream.emit('data', soFar)  
     stream.emit('end')
+  }
+
+  return stream
+}
+
+//
+// gate 
+//
+// while the gate is shut(), buffer incoming. 
+// 
+// if gate is open() stream like normal.
+//
+// currently, when opened, this will emit all data unless it is shut again
+// if downstream pauses it will still write, i'd like to make it respect pause, 
+// but i'll need a test case first.
+
+es.gate = function () {
+
+  var stream = new Stream()
+    , queue = []
+    , shut = true
+    , ended = false
+
+  stream.writable = true
+  stream.readable = true
+
+  stream.isShut = function () { return shut }
+  stream.shut   = function () { shut = true }
+  stream.open   = function () { shut = false; maybe() }
+  
+  function maybe () {
+    while(queue.length && !shut) {
+      var args = queue.shift()
+      args.unshift('data')
+      stream.emit.apply(stream, args)
+    }
+    stream.emit('drain')
+    if(ended && !shut) 
+      stream.emit('end')
+  }
+  
+  stream.write = function () {
+    var args = [].slice.call(arguments)
+  
+    queue.push(args)
+    if (shut) return false //pause up stream pipes  
+
+    maybe()
+  }
+
+  stream.end = function () {
+    ended = true
+    if (!queue.length)
+      stream.emit('end')
   }
 
   return stream
