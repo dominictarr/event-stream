@@ -143,6 +143,27 @@ listening for 'error' will recieve errors from all streams inside the pipe.
     )
 ```
 
+## gate (isShut=true) 
+
+If the gate is `shut` buffer the stream.  
+If the gate is open, let the stream through.  
+
+`end` will not be sent downstream if the gate is shut.
+
+named `shut` instead of close, because close is already kinda meaningful with streams.  
+
+gate is useful for holding off processing a stream until some resource (i.e. a database, or network connection) is ready.  
+
+``` js
+
+  var gate = es.gate()
+  
+  gate.open() //allow the gate to stream
+  
+  gate.close() //buffer the stream, also do not allow 'end' 
+
+```
+
 ## duplex
 
 take a writable stream, and a readable stream, and makes them appear as a readable writable stream.
