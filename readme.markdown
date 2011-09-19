@@ -203,6 +203,23 @@ node pipeable_pretty.js --port 4646
 curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
 
 ```
+## compatible modules
+
+  * https://github.com/felixge/node-growing-file
+    stream changes on file that is being appended to. just like `tail -f`
+
+  * https://github.com/isaacs/sax-js
+    streaming xml parser
+
+  * `filter` pipeable string.replace
+    https://github.com/tim-smart/node-filter
+
+## almost compatible modules (1+ these issues)
+
+https://github.com/fictorial/json-line-protocol/issues/1
+
+https://github.com/jahewson/node-byline/issues/1
+
 
 
 <!--
