@@ -211,6 +211,21 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
   * https://github.com/isaacs/sax-js
     streaming xml parser
 
+  * https://github.com/mikeal/request
+    make http requests. request() returns a through stream!
+
+  * https://github.com/TooTallNate/node-throttle
+    throttle streams on a bytes per second basis (binary streams only, of course)
+    
+  * https://github.com/mikeal/morestreams
+    chunk type agnostic stream buffering (will work with any object stream)
+    
+  * https://github.com/TooTallNate/node-gzip-stack
+    compress and decompress raw streams.
+
+  * https://github.com/dodo/node-bufferstream
+    buffer streams until you say
+
   * `filter` pipeable string.replace
     https://github.com/tim-smart/node-filter
 
