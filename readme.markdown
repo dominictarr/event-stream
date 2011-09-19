@@ -4,17 +4,18 @@
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
 normally, streams are only used of IO,  
-but in event stream we send all kinds of object down the pipe,  
-if the input and output of your application are streams, why not make the throughput of your application into a stream?  
+but in event stream we send all kinds of object down the pipe.  
+If your your application's <em>input</em> and <em>output</em> are streams,  
+shouldn't the <em>throughput</em> be a stream too?  
 
-the `event-stream` functions resemble the the array functions,  
+The *EventStream* functions resemble the the array functions,  
 because Streams are like Arrays, but laid out in time, rather in memory.  
 
 <em>All the `event-stream` functions return instances of `Stream`</em>
 
-[nodejs.org/api/streams](http://nodejs.org/api/streams.html "Stream")
+Stream API docs: [nodejs.org/api/streams](http://nodejs.org/api/streams.html "Stream")
 
-NOTE: I shall use the term <em>"through stream"</em> to refur to a stream that is both readable and writable.  
+NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
 ###[simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
 
@@ -231,10 +232,20 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
 
 ## almost compatible modules (1+ these issues)
 
-https://github.com/fictorial/json-line-protocol/issues/1
+  * https://github.com/fictorial/json-line-protocol/issues/1
+    line reader
+    
+  * https://github.com/jahewson/node-byline/issues/1
+    line reader
 
-https://github.com/jahewson/node-byline/issues/1
+  * https://github.com/AvianFlu/ntwitter/issues/3
+    twitter client
 
+  * https://github.com/swdyh/node-chirpstream/issues/1
+    twitter client
+    
+  * https://github.com/polotek/evented-twitter/issues/22
+    twitter client
 
 
 <!--
