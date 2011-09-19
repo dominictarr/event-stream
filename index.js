@@ -79,8 +79,10 @@ es.map = function (mapper) {
       inNext = true
       outputs ++
       var args = [].slice.call(arguments)
-      if(err)
-       return inNext = false, stream.emit('error')    
+      if(err) {
+        args.unshift('error')
+        return inNext = false, stream.emit.apply(stream, args)
+      }
       args.shift() //drop err
     
       if (args.length){
@@ -165,6 +167,7 @@ es.pipe = es.connect = function () {
  
   function onerror () {
     var args = [].slice.call(arguments)
+    console.log('ERRORORR', args)
     args.unshift('error')
     thepipe.emit.apply(thepipe, args)
   }

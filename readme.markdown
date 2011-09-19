@@ -224,11 +224,21 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
   * https://github.com/TooTallNate/node-gzip-stack
     compress and decompress raw streams.
 
+  * https://github.com/Floby/node-json-streams
+    parse json without buffering it first
+    
+  * https://github.com/floby/node-tokenizer
+    tokenizer
+  
+  * https://github.com/floby/node-parser
+    general mechanisms for custom parsers
+    
   * https://github.com/dodo/node-bufferstream
     buffer streams until you say
 
-  * `filter` pipeable string.replace
-    https://github.com/tim-smart/node-filter
+  * https://github.com/tim-smart/node-filter
+    `filter` pipeable string.replace
+    
 
 ## almost compatible modules (1+ these issues)
 
