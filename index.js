@@ -60,6 +60,55 @@ es.readArray = function (array) {
   return stream
 }
 
+//
+// readable (asyncFunction)
+// return a stream that calls an async function while the stream is not paused.
+//
+// the function must take: (count, callback) {...
+//
+es.readable = function (func, continueOnError) {
+  var stream = new Stream()
+    , i = 0
+    , paused = false
+    , ended = false
+
+  stream.readable = true  
+  stream.writable = false
+ 
+  if('function' !== typeof func)
+    throw new Error('event-stream.readable expects async function')
+  
+  stream.on('end', function () { ended = true })
+  
+  function get (err, data) {
+    if(err) {
+      stream.emit('error', err)
+      if(!continueOnError) stream.emit('end')
+    } else if (arguments.length > 1)
+      stream.emit('data', data)
+      
+    if(ended || paused) return
+    process.nextTick(function () {
+      try {
+        func.call(stream, i++, get)
+      } catch (err) {
+        stream.emit('error', err)    
+      }
+    })
+  
+  }
+  stream.resume = function () {
+    paused = false
+    get()
+  }
+  process.nextTick(stream.resume)
+  stream.pause = function () {
+     paused = true
+  }
+  return stream
+}
+
+
 //create an event stream and apply function to each .write
 //emitting each response as data
 //unless it's an empty callback
