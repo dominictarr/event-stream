@@ -1,5 +1,5 @@
 { "name": "event-stream"
-, "version": "0.4.0"
+, "version": "0.5.0"
 , "description": "construct pipes of streams of events"
 , "homepage": "http://github.com/dominictarr/event-stream"
 , "repository": 
