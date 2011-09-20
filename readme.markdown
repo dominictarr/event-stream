@@ -1,17 +1,17 @@
 # EventStream
 
-[Streams](http://nodejs.org/api/streams.html "Stream") are node's best and most misunderstood idea,
+[Streams](http://nodejs.org/api/streams.html "Stream") are nodes best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
-normally, streams are only used of IO,  
-but in event stream we send all kinds of object down the pipe.  
-If your your application's <em>input</em> and <em>output</em> are streams,  
+Normally, streams are only used of IO,  
+but in event stream we send all kinds of objects down the pipe.  
+If your application's <em>input</em> and <em>output</em> are streams,  
 shouldn't the <em>throughput</em> be a stream too?  
 
-The *EventStream* functions resemble the the array functions,  
-because Streams are like Arrays, but laid out in time, rather in memory.  
+The *EventStream* functions resemble the array functions,  
+because Streams are like Arrays, but laid out in time, rather than in memory.  
 
-<em>All the `event-stream` functions return instances of `Stream`</em>
+<em>All the `event-stream` functions return instances of `Stream`</em>.
 
 Stream API docs: [nodejs.org/api/streams](http://nodejs.org/api/streams.html "Stream")
 
@@ -36,7 +36,7 @@ if(!module.parent) {
     )
   }
 ```
-run it...
+run it ...
 
 ``` bash  
 curl -sS registry.npmjs.org/event-stream | node pretty.js
@@ -48,7 +48,7 @@ curl -sS registry.npmjs.org/event-stream | node pretty.js
 
 ##map (asyncFunction)
 
-create a through stream from an asyncronous function.  
+Create a through stream from an asyncronous function.  
 
 ``` js
 var es = require('event-stream')
@@ -61,7 +61,7 @@ es.map(function (data, callback) {
 
 ```
 
-Each map MUST call the callback. it may callback with data, with an error or with no arguments, 
+Each map MUST call the callback. It may callback with data, with an error or with no arguments, 
 
   * `callback()` drop this data.  
     this makes the map work like `filter`,  
@@ -74,11 +74,11 @@ Each map MUST call the callback. it may callback with data, with an error or wit
 >Note: if a callback is not called, `map` will think that it is still being processed,   
 >every call must be answered or the stream will not know when to end.  
 >
->also, if the callback is called more than once, every call but the first will be ignored.
+>Also, if the callback is called more than once, every call but the first will be ignored.
 
 ##readArray (array)
 
-create a readable stream from an Array.
+Create a readable stream from an Array.
 
 Just emit each item as a data event, respecting `pause` and `resume`.
 
@@ -106,9 +106,9 @@ all `data` events are stored in an array, which is passed to the callback when t
 
 ## split ()
 
-break up a stream and reassemble it so that each line is a chunk.  
+Break up a stream and reassemble it so that each line is a chunk.  
 
-example, read every line in a file
+Example, read every line in a file ...
 
 ``` js
   es.connect(
@@ -124,11 +124,11 @@ example, read every line in a file
 
 ## connect (stream1,...,streamN)
 
-connect multiple Streams together into one stream.  
-`connect` will return a Stream. this stream will write to the first stream,
+Connect multiple Streams together into one stream.  
+`connect` will return a Stream. This stream will write to the first stream,
 and will emit data from the last stream. 
 
-listening for 'error' will recieve errors from all streams inside the pipe.
+Listening for 'error' will recieve errors from all streams inside the pipe.
 
 ``` js
 
@@ -145,14 +145,14 @@ listening for 'error' will recieve errors from all streams inside the pipe.
 
 ## gate (isShut=true) 
 
-If the gate is `shut` buffer the stream.  
+If the gate is `shut`, buffer the stream.  
 If the gate is open, let the stream through.  
 
 `end` will not be sent downstream if the gate is shut.
 
-named `shut` instead of close, because close is already kinda meaningful with streams.  
+Named `shut` instead of close, because close is already kinda meaningful with streams.  
 
-gate is useful for holding off processing a stream until some resource (i.e. a database, or network connection) is ready.  
+Gate is useful for holding off processing a stream until some resource (i.e. a database, or network connection) is ready.  
 
 ``` js
 
@@ -166,11 +166,11 @@ gate is useful for holding off processing a stream until some resource (i.e. a d
 
 ## duplex
 
-take a writable stream, and a readable stream, and makes them appear as a readable writable stream.
+Takes a writable stream and a readable stream and makes them appear as a readable writable stream.
 
-it is assumed that the two streams are connected to each other in some way.  
+It is assumed that the two streams are connected to each other in some way.  
 
-(this is used by `connect`, and `child`.)
+(This is used by `connect` and `child`.)
 
 ``` js
   var grep = cp.exec('grep Stream')
@@ -180,7 +180,7 @@ it is assumed that the two streams are connected to each other in some way.
 
 ## child (child_process)
 
-create a through stream from a child process
+Create a through stream from a child process ...
 
 ``` js
   var cp = require('child_process')
@@ -191,12 +191,12 @@ create a through stream from a child process
 
 ## pipeable (streamCreatorFunction,...)
 
-the arguments to pipable must be a functions that return  
+The arguments to pipable must be functions that return  
 instances of Stream or async functions.  
-(if a function is returned, it will be turned into a Stream  
-with `es.map`.
+(If a function is returned, it will be turned into a Stream  
+with `es.map`.)
 
-here is the first example rewritten to use `pipeable`
+Here is the first example rewritten to use `pipeable`.
 
 ``` js
 //examples/pretty_pipeable.js
@@ -225,7 +225,7 @@ node pipeable_pretty.js --port 4646
 curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
 
 ```
-## compatible modules
+## compatible modules:
 
   * https://github.com/felixge/node-growing-file
     stream changes on file that is being appended to. just like `tail -f`
@@ -261,7 +261,7 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
     `filter` pipeable string.replace
     
 
-## almost compatible modules (1+ these issues)
+## almost compatible modules: (1+ these issues)
 
   * https://github.com/fictorial/json-line-protocol/issues/1
     line reader
@@ -284,7 +284,7 @@ TODO, the following methods are not implemented yet.
 
 ## sidestream (stream1,...,streamN)
 
-pipes the incoming stream to many writable streams.  
+Pipes the incoming stream to many writable streams.  
 remits the input stream.
 
 ``` js
@@ -297,9 +297,9 @@ remits the input stream.
 
 ## merge (stream1,...,streamN)
 
-create a readable stream that merges many streams into one
+Create a readable stream that merges many streams into one.
 
-(not implemented yet)
+(Not implemented yet.)
 
 ### another pipe example
 
