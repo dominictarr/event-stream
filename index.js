@@ -128,6 +128,20 @@ es.map = function (mapper) {
 }
 
 //
+// map sync
+//
+
+es.mapSync = function (sync) {
+  
+  return es.map(function () {
+    var args = [].slice.call(arguments)
+      , callback = args.pop()
+      
+      callback(null, sync.apply(null, args))
+  })
+}
+
+//
 // log just print out what is coming through the stream, for debugging
 //
 
@@ -284,12 +298,13 @@ es.split = function (matcher) {
 // if downstream pauses it will still write, i'd like to make it respect pause, 
 // but i'll need a test case first.
 
-es.gate = function () {
+es.gate = function (shut) {
 
   var stream = new Stream()
     , queue = []
-    , shut = true
     , ended = false
+
+    shut = shut === false ? false : true //default to shut
 
   stream.writable = true
   stream.readable = true
