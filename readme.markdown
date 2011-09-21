@@ -76,6 +76,31 @@ Each map MUST call the callback. It may callback with data, with an error or wit
 >
 >Also, if the callback is called more than once, every call but the first will be ignored.
 
+##readable (asyncFunction) 
+
+create a readable stream (that respects pause) from an async function.  
+while the stream is not paused,  
+the function will be polled with `(count, callback)`,  
+and `this`  will be the readable stream.
+
+``` js
+
+es.readable(function (count, callback) {
+  if(streamHasEnded)
+    return this.emit('end')
+  
+  //...
+  
+  this.emit('data', data) //use this way to emit multiple chunks per call.
+      
+  callback() // you MUST always call the callback eventually.
+             // the function will not be called again until you do this.
+})
+```
+you can also pass the data and the error to the callback.  
+you may only call the callback once.  
+calling the same callback more than once will have no effect.  
+
 ##readArray (array)
 
 Create a readable stream from an Array.
@@ -146,9 +171,10 @@ Listening for 'error' will recieve errors from all streams inside the pipe.
 ## gate (isShut=true) 
 
 If the gate is `shut`, buffer the stream.  
-If the gate is open, let the stream through.  
+All calls to write will return false (pause upstream),  
+and end will not be sent downstream.  
 
-`end` will not be sent downstream if the gate is shut.
+If the gate is open, let the stream through.  
 
 Named `shut` instead of close, because close is already kinda meaningful with streams.  
 
@@ -227,55 +253,55 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
 ```
 ## compatible modules:
 
-  * https://github.com/felixge/node-growing-file
+  * https://github.com/felixge/node-growing-file  
     stream changes on file that is being appended to. just like `tail -f`
 
-  * https://github.com/isaacs/sax-js
+  * https://github.com/isaacs/sax-js  
     streaming xml parser
 
-  * https://github.com/mikeal/request
+  * https://github.com/mikeal/request  
     make http requests. request() returns a through stream!
 
-  * https://github.com/TooTallNate/node-throttle
+  * https://github.com/TooTallNate/node-throttle  
     throttle streams on a bytes per second basis (binary streams only, of course)
     
-  * https://github.com/mikeal/morestreams
+  * https://github.com/mikeal/morestreams  
     buffer input until connected to a pipe.
     
-  * https://github.com/TooTallNate/node-gzip-stack
+  * https://github.com/TooTallNate/node-gzip-stack  
     compress and decompress raw streams.
 
-  * https://github.com/Floby/node-json-streams
+  * https://github.com/Floby/node-json-streams  
     parse json without buffering it first
     
-  * https://github.com/floby/node-tokenizer
+  * https://github.com/floby/node-tokenizer  
     tokenizer
   
-  * https://github.com/floby/node-parser
+  * https://github.com/floby/node-parser  
     general mechanisms for custom parsers
     
-  * https://github.com/dodo/node-bufferstream
+  * https://github.com/dodo/node-bufferstream  
     buffer streams until you say (written in C)
 
-  * https://github.com/tim-smart/node-filter
+  * https://github.com/tim-smart/node-filter  
     `filter` pipeable string.replace
     
 
 ## almost compatible modules: (1+ these issues)
 
-  * https://github.com/fictorial/json-line-protocol/issues/1
+  * https://github.com/fictorial/json-line-protocol/issues/1  
     line reader
     
-  * https://github.com/jahewson/node-byline/issues/1
+  * https://github.com/jahewson/node-byline/issues/1  
     line reader
 
-  * https://github.com/AvianFlu/ntwitter/issues/3
+  * https://github.com/AvianFlu/ntwitter/issues/3  
     twitter client
 
-  * https://github.com/swdyh/node-chirpstream/issues/1
+  * https://github.com/swdyh/node-chirpstream/issues/1  
     twitter client
     
-  * https://github.com/polotek/evented-twitter/issues/22
+  * https://github.com/polotek/evented-twitter/issues/22  
     twitter client
 
 
