@@ -310,16 +310,23 @@ es.duplex = function (reader, writer) {
   return thepipe
 }
 
-es.split = function (matcher) {
-  var stream = new Stream()
-    , soFar = ''  
-  
-  if (!matcher)
-      matcher = '\n'
+/**
+   Split a stream on new lines. This assumes utf8 encoding.
+
+   @param {String|RegExp} [matcher='\n']        string or regex to split on, default is '\n'
+   @param {Boolean}       [trimLineFeed=false]  true does not add line feed, false (default) adds linefeed
+  */ 
+es.split = function (matcher, trimLineFeed) {
+  var stream = new Stream();
+  var remnants = [];
+
+  if (!matcher) matcher = '\n';
 
   stream.writable = true
   stream.readable = true;  //necessary for reading more than one data event
+  
   stream.write = function (buffer) {
+    
     buffer = buffer.toString()
     var l = buffer.length
       , i = 0
