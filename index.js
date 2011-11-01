@@ -124,7 +124,7 @@ es.map = function (mapper) {
     , inputs = 0
     , outputs = 0
     , ended = false
-
+    , paused = false
   stream.writable = true
   stream.readable = true
    
@@ -148,7 +148,8 @@ es.map = function (mapper) {
         r = stream.emit.apply(stream, args)
       }
       if(inputs == outputs) {
-        stream.emit('drain') //written all the incoming events
+        if(paused) stream.emit('drain') //written all the incoming events
+        paused = false
         if(ended)
           stream.end()
       }
@@ -158,7 +159,9 @@ es.map = function (mapper) {
     
     try {
       //catch sync errors and handle them like async errors
-      return mapper.apply(null,args)
+      var written = mapper.apply(null,args)
+      if(written === false) paused = true
+      return written
     } catch (err) {
       //if the callback has been called syncronously, and the error
       //has occured in an listener, throw it again.
