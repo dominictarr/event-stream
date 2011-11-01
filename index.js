@@ -268,7 +268,7 @@ es.child = function (child) {
 // duplex -- pipe into one stream and out another
 //
 
-es.duplex = function (writer, reader) {
+es.duplex = function (reader, writer) {
   var thepipe = new Stream()
 
   thepipe.__defineGetter__('writable', function () { return writer.writable })
