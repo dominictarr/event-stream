@@ -313,42 +313,50 @@ es.duplex = function (reader, writer) {
 /**
    Split a stream on new lines. This assumes utf8 encoding.
 
-   @param {String|RegExp} [matcher='\n']        string or regex to split on, default is '\n'
-   @param {Boolean}       [trimLineFeed=false]  true does not add line feed, false (default) adds linefeed
-  */ 
-es.split = function (matcher, trimLineFeed) {
-  var stream = new Stream();
-  var remnants = [];
+   @example
+   es.split()   // split on newline, output '\n' at end of each line
 
-  if (!matcher) matcher = '\n';
+   @example
+   es.split('\n', '')   // split on newline, but do not add '\n' to each line
+
+   @param {String|RegExp} [matcher='\n']    string or regex to split on, default is '\n'
+   @param {String}        [separator='\n']  appended to each line, default '\n'. Use '' to skip appending
+  */ 
+es.split = function (matcher, separator) {
+  var stream = new Stream();
+  if (!matcher) matcher = '\n';  //setup default matcher if none specified
+  if (undefined === separator) separator = '\n';  //default separator '\n'
 
   stream.writable = true
   stream.readable = true;  //necessary for reading more than one data event
+  var remnants = [];       //array of partial lines
   
   stream.write = function (buffer) {
-    
-    buffer = buffer.toString()
-    var l = buffer.length
-      , i = 0
-    while (i < l) {
-      var c = buffer[i].toString()
-      soFar += c
-      if (c == matcher) {
-        var n = soFar;
-        soFar = '' 
-        this.emit('data', n)
-      }
-    i++
+    var data = buffer.toString(); // utf8
+    var lines = data.split(matcher);
+    if (lines.length === 1) { //only partial match, save it in remnant array
+      remnants.push(lines.shift());
+      return true;
     }
+    
+    //otherwise, we have some data to emit and a new partial line
+    remnants.push(lines.shift());     //shift first line which is partial and add to remnants
+    lines.unshift(remnants.join('')); //join all remnants into single line and unshift to front
+    remnants.length = 0;              //clear the array
+    remnants.push(lines.pop());       //last data is partial, wait for split match
+    lines.forEach(function (line) {
+      if (separator) line = line + separator;  // null or empty string will skip this
+      stream.emit('data', line);
+    });
     return true;
   }
 
   stream.end = function () {
-    stream.emit('data', soFar)  
-    stream.emit('end')
+    stream.emit('data', remnants.join(''));  
+    stream.emit('end');
   }
 
-  return stream
+  return stream;
 }
 
 //
