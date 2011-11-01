@@ -318,6 +318,7 @@ es.split = function (matcher) {
       matcher = '\n'
 
   stream.writable = true
+  stream.readable = true;  //necessary for reading more than one data event
   stream.write = function (buffer) {
     buffer = buffer.toString()
     var l = buffer.length
