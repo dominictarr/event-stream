@@ -71,6 +71,7 @@ es.readable = function (func, continueOnError) {
     , i = 0
     , paused = false
     , ended = false
+    , reading = false
 
   stream.readable = true  
   stream.writable = false
@@ -81,16 +82,21 @@ es.readable = function (func, continueOnError) {
   stream.on('end', function () { ended = true })
   
   function get (err, data) {
+    
     if(err) {
       stream.emit('error', err)
       if(!continueOnError) stream.emit('end')
     } else if (arguments.length > 1)
       stream.emit('data', data)
-      
-    if(ended || paused) return
+
     process.nextTick(function () {
+      if(ended || paused || reading) return
       try {
-        func.call(stream, i++, get)
+        reading = true
+        func.call(stream, i++, function () {
+          reading = false
+          get.apply(null, arguments)
+        })
       } catch (err) {
         stream.emit('error', err)    
       }
@@ -101,7 +107,7 @@ es.readable = function (func, continueOnError) {
     paused = false
     get()
   }
-  process.nextTick(stream.resume)
+  process.nextTick(get)
   stream.pause = function () {
      paused = true
   }
@@ -198,7 +204,8 @@ es.log = function (name) {
   return es.map(function () {
     var args = [].slice.call(arguments)
     var cb = args.pop()
-    console.error(name, args)
+    if(name) args.slice().unshift(name)
+    console.error.apply(null, args)
     args.unshift(null)
     cb.apply(null, args)
   })
@@ -233,7 +240,6 @@ es.pipe = es.connect = function () {
  
   function onerror () {
     var args = [].slice.call(arguments)
-    console.log('ERRORORR', args)
     args.unshift('error')
     thepipe.emit.apply(thepipe, args)
   }
@@ -267,7 +273,6 @@ es.duplex = function (writer, reader) {
 
   ;['write', 'end', 'close'].forEach(function (func) {
     thepipe[func] = function () {
-      console.log(func, arguments)
       return writer[func].apply(writer, arguments)
     }
   })
@@ -285,7 +290,6 @@ es.duplex = function (writer, reader) {
   ;['data', 'close'].forEach(function (event) {
     reader.on(event, function () {
       var args = [].slice.call(arguments)
-      console.error('!',event, args)
       args.unshift(event)
       thepipe.emit.apply(thepipe, args)
     })
@@ -296,7 +300,6 @@ es.duplex = function (writer, reader) {
     if(ended) return
     ended = true
     var args = [].slice.call(arguments)
-    console.error('END', args)
     args.unshift('end')
     thepipe.emit.apply(thepipe, args)
   })
@@ -353,7 +356,8 @@ es.gate = function (shut) {
     , queue = []
     , ended = false
 
-    shut = shut === false ? false : true //default to shut
+    shut = (shut === false ? false : true) //default to shut
+//  console.error('SHUT?', shut)
 
   stream.writable = true
   stream.readable = true
@@ -363,6 +367,7 @@ es.gate = function (shut) {
   stream.open   = function () { shut = false; maybe() }
   
   function maybe () {
+//    console.error('maybe', queue.length, shut)
     while(queue.length && !shut) {
       var args = queue.shift()
       args.unshift('data')
@@ -377,6 +382,7 @@ es.gate = function (shut) {
     var args = [].slice.call(arguments)
   
     queue.push(args)
+//    console.error(queue)
     if (shut) return false //pause up stream pipes  
 
     maybe()
@@ -389,6 +395,25 @@ es.gate = function (shut) {
   }
 
   return stream
+}
+
+//
+// parse
+//
+
+es.parse = function () { 
+  return es.mapSync(function (e){
+    return JSON.parse(e.toString())
+  }) 
+}
+//
+// stringify
+//
+
+es.stringify = function () { 
+  return es.mapSync(function (e){
+    return JSON.stringify(e) + '\n'
+  }) 
 }
 
 //
@@ -414,7 +439,6 @@ es.gate = function (shut) {
 
 var setup = function (args) {
   return args.map(function (f) {
-    console.log(f)
     var x = f()
       if('function' === typeof x)
         return es.map(x)
@@ -449,10 +473,11 @@ es.pipeable = function () {
   } else if (!opts.port) {
     var streams = setup(args)
     streams.unshift(es.split())
-    streams.unshift(process.openStdin())
+    //streams.unshift()
     streams.push(process.stdout)
-  
-    return es.pipe.apply(null, streams)
+    var c = es.connect.apply(null, streams)
+    process.openStdin().pipe(c) //there
+    return c
 
   } else {
   
@@ -466,7 +491,6 @@ es.pipeable = function () {
       streams.unshift(es.split())
       streams.unshift(instream)
       streams.push(outstream || instream)
-      console.error(streams)
       es.pipe.apply(null, streams)
     })
     
