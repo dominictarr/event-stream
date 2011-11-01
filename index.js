@@ -333,6 +333,7 @@ es.split = function (matcher) {
       }
     i++
     }
+    return true;
   }
 
   stream.end = function () {
