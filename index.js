@@ -30,6 +30,23 @@ es.writeArray = function (done) {
   return a
 }
 
+/**
+   Wait for all of the events to finish, then call the cb
+  */
+es.join = function (cb) {
+  if ('function' !== typeof(cb))
+    throw new Error('function join (cb): cb must be function');
+
+  var a = new Stream();
+  a.write = function (l) { };
+  a.end = function () {
+    cb();
+  };
+  a.writable = true;
+  a.readable = false;
+  return a;
+};  
+
 //return a Stream that reads the properties of an object
 //respecting pause() and resume()
 
