@@ -476,6 +476,7 @@ es.stringify = function () {
 
 var setup = function (args) {
   return args.map(function (f) {
+    if (f instanceof Stream) return f;
     var x = f()
       if('function' === typeof x)
         return es.map(x)
