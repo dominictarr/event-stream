@@ -337,7 +337,8 @@ es.split = function (matcher) {
   }
 
   stream.end = function () {
-    stream.emit('data', soFar)  
+    if(soFar)
+      stream.emit('data', soFar)  
     stream.emit('end')
   }
 
@@ -362,7 +363,6 @@ es.gate = function (shut) {
     , ended = false
 
     shut = (shut === false ? false : true) //default to shut
-//  console.error('SHUT?', shut)
 
   stream.writable = true
   stream.readable = true
@@ -372,7 +372,6 @@ es.gate = function (shut) {
   stream.open   = function () { shut = false; maybe() }
   
   function maybe () {
-//    console.error('maybe', queue.length, shut)
     while(queue.length && !shut) {
       var args = queue.shift()
       args.unshift('data')
@@ -387,8 +386,7 @@ es.gate = function (shut) {
     var args = [].slice.call(arguments)
   
     queue.push(args)
-//    console.error(queue)
-    if (shut) return false //pause up stream pipes  
+    if (shut) return //false //pause up stream pipes  
 
     maybe()
   }
@@ -419,6 +417,47 @@ es.stringify = function () {
   return es.mapSync(function (e){
     return JSON.stringify(e) + '\n'
   }) 
+}
+
+//
+// replace a string within a stream.
+//
+// warn: just concatenates the string and then does str.split().join(). 
+// probably not optimal.
+// for smallish responses, who cares?
+// I need this for shadow-npm so it's only relatively small json files.
+
+es.replace = function (from, to) {
+  var stream = new Stream()
+  var body = ''
+  stream.readable = true
+  stream.writable = true
+  stream.write = function (data) { body += data }
+  stream.end = function (data) {
+    if(data)
+      body += data
+
+    stream.emit('data', body.split(from).join(to))
+    stream.emit('end')
+  }
+  return stream
+} 
+
+es.join = function (callback) {
+  var stream = new Stream()
+  var body = ''
+  stream.readable = true
+  stream.writable = true
+  stream.write = function (data) { body += data }
+  stream.end = function (data) {
+    if(data)
+      body += data
+    if(callback)
+      callback(null, body)
+    stream.emit('data', body)
+    stream.emit('end')
+  }
+  return stream
 }
 
 //
