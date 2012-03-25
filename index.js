@@ -9,6 +9,7 @@ var Stream = require('stream').Stream
 
 es.Stream = Stream //re-export Stream from core
 
+<<<<<<< index.js
 
 //a do nothing stream that just passes through
 
@@ -30,6 +31,30 @@ es.through = function () {
 }
 
 
+||||||| node_modules/event-stream/index.js
+=======
+// through
+//
+// a stream that does nothing but re-emit the input.
+// useful for aggregating a series of changing but not ending streams into one stream)
+
+es.through = function () {
+  var stream = new Stream()
+  stream.readable = stream.writable = true
+  
+  stream.write = function (data) {
+    stream.emit('data', data)
+  }
+  stream.end = function (data) {
+    if(data)
+      stream.emit('data',data)
+    stream.emit('end')
+  }
+  return stream
+}
+
+
+>>>>>>> ../snob/node_modules/event-stream/index.js
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
 // mainly I'm using this to test the other functions
@@ -453,12 +478,11 @@ es.replace = function (from, to) {
   var body = ''
   stream.readable = true
   stream.writable = true
-  stream.write = function (data) { body += data }
+  stream.write = function (data) { body += data; return true }
   stream.end = function (data) {
     if(data)
       body += data
-
-    stream.emit('data', body.split(from).join(to))
+    if(body) stream.emit('data', body.split(from).join(to))
     stream.emit('end')
   }
   return stream
