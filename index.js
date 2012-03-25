@@ -9,6 +9,27 @@ var Stream = require('stream').Stream
 
 es.Stream = Stream //re-export Stream from core
 
+
+//a do nothing stream that just passes through
+
+es.through = function () {
+  var s = new Stream()
+  s.readable = true
+  s.writeable = true
+  s.write = function (data) {
+    this.emit('data', data)
+    return true
+  }
+  s.end = function (data) {
+    if(data)
+      this.write(data)
+    this.emit('end')
+    this.writable = false
+  }
+  return s
+}
+
+
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
 // mainly I'm using this to test the other functions
