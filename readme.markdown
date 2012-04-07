@@ -1,5 +1,7 @@
 # EventStream
 
+<img src=https://secure.travis-ci.org/dominictarr/event-stream.png?branch=master>
+
 [Streams](http://nodejs.org/api/streams.html "Stream") are nodes best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
@@ -42,8 +44,6 @@ run it ...
 curl -sS registry.npmjs.org/event-stream | node pretty.js
 ```
  
-[test are in event-stream_tests](https://github.com/dominictarr/event-stream_tests)
-
 [node Stream documentation](http://nodejs.org/api/streams.html)
 
 ##map (asyncFunction)
