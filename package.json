@@ -9,9 +9,9 @@
     "optimist": "0.2"
   }
 , "devDependencies": {
-    "nodeunit": "*",
+    "asynct": "*",
     "it-is":  "1",
-    "d-utils":"2.3"
+    "ubelt":"~2.9"
   }
 , "scripts": {"test": "asynct test/"}
 , "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)"
