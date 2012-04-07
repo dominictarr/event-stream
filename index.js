@@ -169,8 +169,7 @@ es.map = function (mapper) {
         r = stream.emit.apply(stream, args)
       }
       if(inputs == outputs) {
-        if(paused) stream.emit('drain') //written all the incoming events
-        paused = false
+        if(paused) paused = false, stream.emit('drain') //written all the incoming events
         if(ended)
           stream.end()
       }
