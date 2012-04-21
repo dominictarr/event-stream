@@ -38,7 +38,6 @@ es.asyncThrough = function () {
   var stream = new Stream()
   var queue = []
   var ended = false
-  bLen = bLen == null ? -1 : bLen //default to -1, infinite buffer.
   stream.readable = stream.writable = true
   stream.flush = function () {
     while(queue.length)
