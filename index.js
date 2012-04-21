@@ -29,6 +29,38 @@ es.through = function () {
   return stream
 }
 
+// buffered
+//
+// same as a through stream, but won't emit a chunk until the next tick.
+// does not support any pausing. intended for testing purposes.
+
+es.asyncThrough = function () {
+  var stream = new Stream()
+  var queue = []
+  var ended = false
+  bLen = bLen == null ? -1 : bLen //default to -1, infinite buffer.
+  stream.readable = stream.writable = true
+  stream.flush = function () {
+    while(queue.length)
+      stream.emit('data', queue.shift())  
+    if(ended) stream.emit('end')
+  }
+  stream.write = function (data) {
+    if(ended) return
+    if(!queue.length)
+      process.nextTick(stream.flush)
+    queue.push(data)
+    return true
+  }
+  stream.end = function (data) {
+    if(data) stream.write(data)
+    ended = true
+    if(!queue.length)
+      stream.emit('end')
+  }
+  return stream
+}
+
 
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
@@ -154,6 +186,7 @@ es.map = function (mapper) {
     var args = [].slice.call(arguments)
       , r
       , inNext = false 
+    //pipe only allows one argument. so, do not 
     function next (err) {
       inNext = true
       outputs ++
@@ -163,7 +196,6 @@ es.map = function (mapper) {
         return inNext = false, stream.emit.apply(stream, args)
       }
       args.shift() //drop err
-    
       if (args.length){
         args.unshift('data')
         r = stream.emit.apply(stream, args)
