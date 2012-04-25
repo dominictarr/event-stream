@@ -540,7 +540,10 @@ var setup = function (args) {
 }
 
 es.pipeable = function () {
-  var opts = require('optimist').argv
+  if(process.title != 'node')
+    return console.error('cannot use es.pipeable in the browser')
+  //(require) inside brackets to fool browserify, because this does not make sense in the browser.
+  var opts = (require)('optimist').argv
   var args = [].slice.call(arguments)
   
   if(opts.h || opts.help) {
@@ -577,7 +580,7 @@ es.pipeable = function () {
     opts.host = opts.host || 'localhost'
     opts.protocol = opts.protocol || 'http'
     
-    var protocol = require(opts.protocol)
+    var protocol = (require)(opts.protocol)
         
     var server = protocol.createServer(function (instream, outstream) {  
       var streams = setup(args)
