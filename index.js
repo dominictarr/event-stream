@@ -258,7 +258,7 @@ es.log = function (name) {
   return es.map(function () {
     var args = [].slice.call(arguments)
     var cb = args.pop()
-    console.error.apply(null, name ? [name].concat(args) : args)
+    console.error.apply(console, name ? [name].concat(args) : args)
     args.unshift(null)
     cb.apply(null, args)
   })
