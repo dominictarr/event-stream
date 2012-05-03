@@ -492,6 +492,10 @@ es.replace = function (from, to) {
   return stream
 } 
 
+//
+// join.
+//
+
 es.join = function (callback) {
   var stream = new Stream()
   var body = ''

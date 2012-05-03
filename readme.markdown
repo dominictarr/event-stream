@@ -190,7 +190,7 @@ Gate is useful for holding off processing a stream until some resource (i.e. a d
 
 ```
 
-## duplex
+## duplex (writeStream, readStream)
 
 Takes a writable stream and a readable stream and makes them appear as a readable writable stream.
 
@@ -214,6 +214,39 @@ Create a through stream from a child process ...
   es.child(cp.exec('grep Stream')) // a through stream
 
 ```
+
+## through ()
+
+reemits data synchronously. useful for testing.
+
+## asyncThrough ()
+
+reemits data asynchronously. useful for testing.
+
+## join (callback)
+
+joins chunks of a stream into a single string. 
+takes an optional callback, which will be passed the 
+complete string when it receives the 'end' event.
+
+also, emits a simgle 'data' event.
+
+``` js
+
+readStream.pipe(es.join(function (err, text) {
+  // have complete text here.
+}))
+
+```
+
+## replace (from, to)
+
+replace occurences of `from` with `to`. `from` may be a string
+or a regular expression.
+
+> TODO: this uses string.split(from).join(to) and does not 
+> emit data until it's received 'end'. need to make this stream properly.
+> pull requests accepted.
 
 ## pipeable (streamCreatorFunction,...)
 
