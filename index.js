@@ -60,6 +60,35 @@ es.asyncThrough = function () {
   return stream
 }
 
+// merge 
+//
+// combine multiple streams into a single stream.
+// will emit end only once
+
+es.merge = function (/*streams...*/) {
+  var toMerge = [].slice.call(arguments)
+  var stream = new Stream()
+  var endCount = 0
+  stream.writable = stream.readable = true
+
+  toMerge.forEach(function (e) {
+    e.pipe(stream, {end: false})
+    var ended = false
+    e.on('end', function () {
+      if(ended) return
+      ended = true
+      endCount ++
+      if(endCount == toMerge.length)
+        stream.emit('end') 
+    })
+  })
+  stream.write = function (data) {
+    this.emit('data', data)
+  }
+
+  return stream
+}
+
 
 // writable stream, collects all events into an array 
 // and calls back when 'end' occurs
