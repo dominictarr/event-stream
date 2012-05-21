@@ -28,7 +28,7 @@ exports ['fizz buzz'] = function (test) {
 
 
 exports ['fizz buzz replace'] = function (test) {
-  var split = es.split('1')
+  var split = es.split(/(1)/)
 
   var replace = es.replace('7', 'seven')
   
