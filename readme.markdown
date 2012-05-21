@@ -129,9 +129,9 @@ all `data` events are stored in an array, which is passed to the callback when t
   reader.pipe(writer)
 ```
 
-## split ()
+## split (matcher)
 
-Break up a stream and reassemble it so that each line is a chunk.  
+Break up a stream and reassemble it so that each line is a chunk. matcher may be a `String`, or a `RegExp` 
 
 Example, read every line in a file ...
 
@@ -149,6 +149,17 @@ Example, read every line in a file ...
 
 `split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` paremeter is ignored.
 [String#split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split)
+
+## join (seperator)
+
+create a through stream that emits `seperator` between each chunk, just like Array#join.
+
+(for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
+
+## replace (from, to)
+
+Replace all occurences of `from` with `to`. `from` may be a `String` or a `RegExp`.  
+Works just like `string.split(from).join(to)`, but streaming.
 
 ## connect (stream1,...,streamN)
 
@@ -226,8 +237,9 @@ reemits data synchronously. useful for testing.
 
 reemits data asynchronously. useful for testing.
 
-## join (callback)
+## wait (callback)
 
+waits for stream to emit 'end'.
 joins chunks of a stream into a single string. 
 takes an optional callback, which will be passed the 
 complete string when it receives the 'end' event.
@@ -241,15 +253,6 @@ readStream.pipe(es.join(function (err, text) {
 }))
 
 ```
-
-## replace (from, to)
-
-replace occurences of `from` with `to`. `from` may be a string
-or a regular expression.
-
-> TODO: this uses string.split(from).join(to) and does not 
-> emit data until it's received 'end'. need to make this stream properly.
-> pull requests accepted.
 
 ## pipeable (streamCreatorFunction,...)
 
