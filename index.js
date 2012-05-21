@@ -501,25 +501,45 @@ es.stringify = function () {
 // I need this for shadow-npm so it's only relatively small json files.
 
 es.replace = function (from, to) {
-  var stream = new Stream()
-  var body = ''
-  stream.readable = true
-  stream.writable = true
-  stream.write = function (data) { body += data; return true }
-  stream.end = function (data) {
-    if(data)
-      body += data
-    if(body) stream.emit('data', body.split(from).join(to))
-    stream.emit('end')
-  }
-  return stream
+  return es.connect(es.split(from), es.join(to))
 } 
 
 //
-// join.
+// join chunks with a joiner. just like Array#join
+// also accepts a callback that is passed the chunks appended together
+// this is still supported for legacy reasons.
+// 
+
+es.join = function (str) {
+  
+  //legacy api
+  if('function' === typeof str)
+    return es.wait(str)
+
+  var stream = new Stream()
+  var first = true
+  stream.readable = stream.writable = true
+  stream.write = function (data) {
+    if(!first)
+      stream.emit('data', str)
+    first = false
+    stream.emit('data', data)
+    return true
+  }
+  stream.end = function (data) {
+    if(data)
+      this.write(data)
+    this.emit('end')
+  }
+  return stream
+}
+
+
+//
+// wait. callback when 'end' is emitted, with all chunks appended as string.
 //
 
-es.join = function (callback) {
+es.wait = function (callback) {
   var stream = new Stream()
   var body = ''
   stream.readable = true
