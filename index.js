@@ -403,7 +403,7 @@ es.split = function (matcher) {
     soFar = pieces.pop()
 
     pieces.forEach(function (piece) {
-      stream.emit('data', piece + matcher)
+      stream.emit('data', piece)
     })
 
     return true
