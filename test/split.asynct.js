@@ -39,3 +39,31 @@ exports ['pipeable'] = function (test) {
   
 }
 
+exports ['pipeable without matcher'] = function (test) {
+  var readme = join(__filename)
+    , expected = fs.readFileSync(readme, 'utf-8').split('\n')
+    , cs = es.split('\n', false) // don't include the matching char in output
+    , actual = []
+    , ended = false
+
+  var a = new Stream ()
+  
+  a.write = function (l) {
+    actual.push(l) // don't trim, leave as is
+  }
+  a.end = function () {
+
+      ended = true
+      expected.forEach(function (v,k) {
+        if(v)
+          it(actual[k]).equal(v) // ensure exactly equal
+      })
+      test.done()
+    }
+  a.writable = true
+  
+  fs.createReadStream(readme, {flags: 'r'}).pipe(cs)
+  cs.pipe(a)  
+  
+}
+

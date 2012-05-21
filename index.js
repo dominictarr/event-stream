@@ -389,12 +389,14 @@ es.duplex = function (writer, reader) {
   return thepipe
 }
 
-es.split = function (matcher) {
+es.split = function (matcher, emitMatcher) {
   var stream = new Stream()
     , soFar = ''  
   
   if (!matcher)
-      matcher = '\n'
+    matcher = '\n'
+  if (emitMatcher !== false)
+    emitMatcher = true
 
   stream.writable = true
   stream.readable = true;  //necessary for reading more than one data event
@@ -403,7 +405,9 @@ es.split = function (matcher) {
     soFar = pieces.pop()
 
     pieces.forEach(function (piece) {
-      stream.emit('data', piece + matcher)
+      if (emitMatcher)
+        piece += matcher
+      stream.emit('data', piece)
     })
 
     return true
