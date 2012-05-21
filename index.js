@@ -399,20 +399,14 @@ es.split = function (matcher) {
   stream.writable = true
   stream.readable = true;  //necessary for reading more than one data event
   stream.write = function (buffer) {
-    buffer = buffer.toString()
-    var l = buffer.length
-      , i = 0
-    while (i < l) {
-      var c = buffer[i].toString()
-      soFar += c
-      if (c == matcher) {
-        var n = soFar;
-        soFar = '' 
-        this.emit('data', n)
-      }
-    i++
-    }
-    return true;
+    var pieces = (soFar + buffer).split(matcher)
+    soFar = pieces.pop()
+
+    pieces.forEach(function (piece) {
+      stream.emit('data', piece + matcher)
+    })
+
+    return true
   }
 
   stream.end = function () {
