@@ -20,11 +20,20 @@ es.through = function () {
   
   stream.write = function (data) {
     stream.emit('data', data)
+    return !stream.paused
   }
   stream.end = function (data) {
     if(data)
       stream.emit('data',data)
     stream.emit('end')
+  }
+  stream.pause = function () {
+    stream.paused = true
+  }
+  stream.resume = function () {
+    if(stream.paused)
+      stream.emit('drain')
+    stream.paused = false
   }
   return stream
 }
@@ -35,7 +44,7 @@ es.through = function () {
 // does not support any pausing. intended for testing purposes.
 
 es.asyncThrough = function () {
-  var stream = new Stream()
+  var stream = es.through()
   var queue = []
   var ended = false
   stream.readable = stream.writable = true
@@ -49,7 +58,7 @@ es.asyncThrough = function () {
     if(!queue.length)
       process.nextTick(stream.flush)
     queue.push(data)
-    return true
+    return !stream.paused
   }
   stream.end = function (data) {
     if(data) stream.write(data)
