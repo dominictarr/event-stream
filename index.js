@@ -14,18 +14,40 @@ es.Stream = Stream //re-export Stream from core
 // a stream that does nothing but re-emit the input.
 // useful for aggregating a series of changing but not ending streams into one stream)
 
-es.through = function () {
+es.through = function (write, end) {
+  write = write || function (data) { this.emit('data', data) }
+  end = (
+    'sync'== end || !end
+  //use sync end. (default)
+  ? function () { this.emit('end') }
+  : 'async' == end || end === true 
+  //use async end.
+  //must eventually call drain if paused.
+  //else will not end.
+  ? function () {
+      if(!this.paused)
+        return this.emit('end')
+     var self = this
+     this.once('drain', function () {
+        self.emit('end')
+      })
+    }
+  //use custom end function
+  : end 
+  )
+  var ended = false
   var stream = new Stream()
   stream.readable = stream.writable = true
   
   stream.write = function (data) {
-    stream.emit('data', data)
+    write.call(this, data)
     return !stream.paused
   }
   stream.end = function (data) {
-    if(data)
-      stream.emit('data',data)
-    stream.emit('end')
+    if(ended) return
+    ended = true
+    if(arguments.length) stream.write(data)
+    end.call(this)
   }
   stream.pause = function () {
     stream.paused = true
@@ -69,11 +91,11 @@ es.asyncThrough = function () {
   return stream
 }
 
-// merge 
+// merge / concat
 //
 // combine multiple streams into a single stream.
 // will emit end only once
-
+es.concat = //actually this should be called concat
 es.merge = function (/*streams...*/) {
   var toMerge = [].slice.call(arguments)
   var stream = new Stream()
@@ -141,7 +163,7 @@ es.readArray = function (array) {
       stream.emit('data', array[i++])
     }
     if(i == l)
-      stream.emit('end'), stream.readible = false
+      stream.emit('end'), stream.readable = false
   }
   process.nextTick(stream.resume)
   stream.pause = function () {
@@ -273,6 +295,7 @@ es.map = function (mapper) {
 
   return stream
 }
+
 
 //
 // map sync
@@ -417,7 +440,6 @@ es.split = function (matcher) {
 
     return true
   }
-
   stream.end = function () {
     if(soFar)
       stream.emit('data', soFar)  
