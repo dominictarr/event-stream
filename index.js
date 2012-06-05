@@ -75,31 +75,9 @@ es.through = function (write, end) {
 // same as a through stream, but won't emit a chunk until the next tick.
 // does not support any pausing. intended for testing purposes.
 
-es.asyncThrough = function () {
-  var stream = es.through()
-  var queue = []
-  var ended = false
-  stream.readable = stream.writable = true
-  stream.flush = function () {
-    while(queue.length)
-      stream.emit('data', queue.shift())  
-    if(ended) stream.emit('end')
-  }
-  stream.write = function (data) {
-    if(ended) return
-    if(!queue.length)
-      process.nextTick(stream.flush)
-    queue.push(data)
-    return !stream.paused
-  }
-  stream.end = function (data) {
-    if(data) stream.write(data)
-    ended = true
-    if(!queue.length)
-      stream.emit('end')
-  }
-  return stream
-}
+// XXX: rewrite this. this is crap. but do I actually use it? maybe just throw it away?
+// okay, it's used in snob. so... throw this out and let snob use a legacy version. (fix later/never)
+
 
 // merge / concat
 //
@@ -252,16 +230,20 @@ es.map = function (mapper) {
     , outputs = 0
     , ended = false
     , paused = false
+    , destroyed = false
+
   stream.writable = true
   stream.readable = true
    
   stream.write = function () {
+    if(ended) throw new Error('map stream is not writable')
     inputs ++
     var args = [].slice.call(arguments)
       , r
       , inNext = false 
     //pipe only allows one argument. so, do not 
     function next (err) {
+      if(destroyed) return
       inNext = true
       outputs ++
       var args = [].slice.call(arguments)
@@ -285,7 +267,7 @@ es.map = function (mapper) {
     
     try {
       //catch sync errors and handle them like async errors
-      var written = mapper.apply(null,args)
+      var written = mapper.apply(null, args)
       if(written === false) paused = true
       return written
     } catch (err) {
@@ -308,6 +290,11 @@ es.map = function (mapper) {
       stream.emit('end')
   }
 
+  stream.destroy = function () {
+    ended = destroyed = true
+    stream.writable = stream.readable = paused = false
+  }
+
   return stream
 }
 
@@ -316,13 +303,9 @@ es.map = function (mapper) {
 // map sync
 //
 
-es.mapSync = function (sync) {
-  
-  return es.map(function () {
-    var args = [].slice.call(arguments)
-      , callback = args.pop()
-      
-      callback(null, sync.apply(null, args))
+es.mapSync = function (sync) { 
+  return es.through(function write(data) {
+    this.emit('data', sync(data))
   })
 }
 
@@ -436,16 +419,13 @@ es.duplex = function (writer, reader) {
 }
 
 es.split = function (matcher) {
-  var stream = new Stream()
-    , soFar = ''  
-  
+  var soFar = ''
   if (!matcher)
-      matcher = '\n'
+    matcher = '\n'
 
-  stream.writable = true
-  stream.readable = true;  //necessary for reading more than one data event
-  stream.write = function (buffer) {
-    var pieces = (soFar + buffer).split(matcher)
+  return es.through(function (buffer) { 
+    var stream = this
+      , pieces = (soFar + buffer).split(matcher)
     soFar = pieces.pop()
 
     pieces.forEach(function (piece) {
@@ -453,14 +433,12 @@ es.split = function (matcher) {
     })
 
     return true
-  }
-  stream.end = function () {
+  },
+  function () {
     if(soFar)
-      stream.emit('data', soFar)  
-    stream.emit('end')
-  }
-
-  return stream
+      this.emit('data', soFar)  
+    this.emit('end')
+  })
 }
 
 //
@@ -504,7 +482,7 @@ es.gate = function (shut) {
     var args = [].slice.call(arguments)
   
     queue.push(args)
-    if (shut) return //false //pause up stream pipes  
+    if (shut) return false //pause up stream pipes  
 
     maybe()
   }
