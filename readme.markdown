@@ -46,6 +46,27 @@ curl -sS registry.npmjs.org/event-stream | node pretty.js
  
 [node Stream documentation](http://nodejs.org/api/streams.html)
 
+## through (write?, end?)
+
+Reemits data synchronously. Easy way to create syncronous through streams.
+Pass in an optional `write` and `end` methods. They will be called in the 
+context of the stream. Use `this.pause()` and `this.resume()` to manage flow.
+Check `this.paused` to see current flow state. (write always returns `!this.paused`)
+
+this function is the basis for most of the syncronous streams in `event-stream`.
+
+``` js
+
+es.through(function write(data) {
+    this.emit('data', data)
+    //this.pause() 
+  },
+  function end () { //optional
+    this.emit('end')
+  })
+
+```
+
 ##map (asyncFunction)
 
 Create a through stream from an asyncronous function.  
@@ -75,6 +96,43 @@ Each map MUST call the callback. It may callback with data, with an error or wit
 >every call must be answered or the stream will not know when to end.  
 >
 >Also, if the callback is called more than once, every call but the first will be ignored.
+
+## mapSync (syncFunction)
+
+Same as `map`, but the callback is called synchronously. Based on `es.through`
+
+## split (matcher)
+
+Break up a stream and reassemble it so that each line is a chunk. matcher may be a `String`, or a `RegExp` 
+
+Example, read every line in a file ...
+
+``` js
+  es.connect(
+    fs.createReadStream(file, {flags: 'r'}),
+    es.split(),
+    es.map(function (line, cb) {
+       //do something with the line 
+       cb(null, line)
+    })
+  )
+
+```
+
+`split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` paremeter is ignored.
+[String#split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split)
+
+## join (seperator)
+
+create a through stream that emits `seperator` between each chunk, just like Array#join.
+
+(for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
+
+## replace (from, to)
+
+Replace all occurences of `from` with `to`. `from` may be a `String` or a `RegExp`.  
+Works just like `string.split(from).join(to)`, but streaming.
+
 
 ##readable (asyncFunction) 
 
@@ -128,38 +186,6 @@ all `data` events are stored in an array, which is passed to the callback when t
 
   reader.pipe(writer)
 ```
-
-## split (matcher)
-
-Break up a stream and reassemble it so that each line is a chunk. matcher may be a `String`, or a `RegExp` 
-
-Example, read every line in a file ...
-
-``` js
-  es.connect(
-    fs.createReadStream(file, {flags: 'r'}),
-    es.split(),
-    es.map(function (line, cb) {
-       //do something with the line 
-       cb(null, line)
-    })
-  )
-
-```
-
-`split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` paremeter is ignored.
-[String#split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split)
-
-## join (seperator)
-
-create a through stream that emits `seperator` between each chunk, just like Array#join.
-
-(for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
-
-## replace (from, to)
-
-Replace all occurences of `from` with `to`. `from` may be a `String` or a `RegExp`.  
-Works just like `string.split(from).join(to)`, but streaming.
 
 ## connect (stream1,...,streamN)
 
@@ -228,14 +254,6 @@ Create a through stream from a child process ...
   es.child(cp.exec('grep Stream')) // a through stream
 
 ```
-
-## through ()
-
-reemits data synchronously. useful for testing.
-
-## asyncThrough ()
-
-reemits data asynchronously. useful for testing.
 
 ## wait (callback)
 
