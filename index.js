@@ -48,6 +48,16 @@ es.through = function (write, end) {
     ended = true
     if(arguments.length) stream.write(data)
     end.call(this)
+    stream.destroy()
+  }
+  /*
+    destroy is called on a writable stream when the upstream closes.
+    it's basically END but something has gone wrong.
+    I'm gonna emit 'close' and change then otherwise act as 'end'
+  */
+  stream.destroy = function () {
+    stream.emit('close')
+    ended = true
   }
   stream.pause = function () {
     stream.paused = true
@@ -223,6 +233,11 @@ es.readable = function (func, continueOnError) {
   stream.pause = function () {
      paused = true
   }
+  stream.destroy = function () {
+    stream.emit('close')
+    stream.emit('end')
+    ended = true
+  }
   return stream
 }
 
@@ -316,12 +331,11 @@ es.mapSync = function (sync) {
 //
 
 es.log = function (name) {
-  return es.map(function () {
+  return es.through(function (data) {
     var args = [].slice.call(arguments)
-    var cb = args.pop()
-    console.error.apply(console, name ? [name].concat(args) : args)
-    args.unshift(null)
-    cb.apply(null, args)
+    if(name) console.error(name, data)
+    else     console.error(data)
+    this.emit('data', data)
   })
 }
 
