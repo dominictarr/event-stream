@@ -503,7 +503,8 @@ es.gate = function (shut) {
 es.parse = function () { 
   return es.through(function (data) {
     try {
-      this.emit('data', JSON.parse(data.toString()))
+      if(data) //ignore empty lines
+        this.emit('data', JSON.parse(data.toString()))
     } catch (err) {
       console.error(err, 'attemping to parse:', data)
     }
