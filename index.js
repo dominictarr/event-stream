@@ -501,9 +501,13 @@ es.gate = function (shut) {
 //
 
 es.parse = function () { 
-  return es.mapSync(function (e){
-    return JSON.parse(e.toString())
-  }) 
+  return es.through(function (data) {
+    try {
+      this.emit('data', JSON.parse(e.toString()))
+    } catch (err) {
+      console.error(err, 'attemping to parse:', data)
+    }
+  })
 }
 //
 // stringify
