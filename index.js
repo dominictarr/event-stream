@@ -305,7 +305,9 @@ es.map = function (mapper) {
 
 es.mapSync = function (sync) { 
   return es.through(function write(data) {
-    this.emit('data', sync(data))
+    var mappedData = sync(data)
+    if (typeof mappedData !== 'undefined')
+      this.emit('data', mappedData)
   })
 }
 
