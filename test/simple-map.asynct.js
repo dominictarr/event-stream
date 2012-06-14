@@ -184,3 +184,69 @@ exports ['emits drain if paused, when all '] = function (test) {
 
 }
 
+exports ['map applied to a stream with filtering'] = function (test) {
+
+  var input = [1,2,3,7,5,3,1,9,0,2,4,6]
+
+  var doubler = es.map(function (data, callback) {
+    if (data % 2)
+      callback(null, data * 2)
+    else
+      callback()
+  })
+  
+  readStream(doubler, function (err, output) {
+    it(output).deepEqual(input.filter(function (j) {
+      return j % 2
+    }).map(function (j) {
+      return j * 2
+    }))
+    test.done()
+  })
+  
+  writeArray(input, doubler)
+  
+}
+
+exports ['simple mapSync applied to a stream'] = function (test) {
+
+  var input = [1,2,3,7,5,3,1,9,0,2,4,6]
+
+  var doubler = es.mapSync(function (data) {
+    return data * 2
+  })
+  
+  readStream(doubler, function (err, output) {
+    it(output).deepEqual(input.map(function (j) {
+      return j * 2
+    }))
+    test.done()
+  })
+  
+  writeArray(input, doubler)
+  
+}
+
+exports ['mapSync applied to a stream with filtering'] = function (test) {
+
+  var input = [1,2,3,7,5,3,1,9,0,2,4,6]
+
+  var doubler = es.mapSync(function (data) {
+    if (data % 2)
+      return data * 2
+  })
+  
+  readStream(doubler, function (err, output) {
+    it(output).deepEqual(input.filter(function (j) {
+      return j % 2
+    }).map(function (j) {
+      return j * 2
+    }))
+    test.done()
+  })
+  
+  writeArray(input, doubler)
+  
+}
+
+
