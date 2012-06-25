@@ -427,6 +427,13 @@ es.duplex = function (writer, reader) {
     thepipe.emit.apply(thepipe, args)
   })
 
+  thepipe.destroy = function () {
+    if(reader.destroy)
+      reader.destroy()
+    if(writer.destroy)
+      writer.destroy()
+  }
+
   return thepipe
 }
 
