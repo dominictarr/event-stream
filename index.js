@@ -58,6 +58,7 @@ es.through = function (write, end) {
   stream.destroy = function () {
     stream.emit('close')
     ended = true
+    stream.writable = stream.readable = false
   }
   stream.pause = function () {
     stream.paused = true
