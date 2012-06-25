@@ -43,12 +43,21 @@ es.through = function (write, end) {
     write.call(this, data)
     return !stream.paused
   }
+
   stream.end = function (data) {
     if(ended) return
     ended = true
     if(arguments.length) stream.write(data)
+    if(this.readable)
+      this.once('end', function () {
+        stream.readable = false
+        if(!(stream.writable || stream.readable))
+          stream.destroy()
+      })
+    this.writable = false
     end.call(this)
-    stream.destroy()
+    if(!this.readable)
+      this.destroy()
   }
   /*
     destroy is called on a writable stream when the upstream closes.
