@@ -44,16 +44,16 @@ es.through = function (write, end) {
     return !stream.paused
   }
 
+  this.on('end', function () {
+    stream.readable = false
+    if(!(stream.writable || stream.readable))
+      stream.destroy()
+  })
+
   stream.end = function (data) {
     if(ended) return
     ended = true
     if(arguments.length) stream.write(data)
-    if(this.readable)
-      this.once('end', function () {
-        stream.readable = false
-        if(!(stream.writable || stream.readable))
-          stream.destroy()
-      })
     this.writable = false
     end.call(this)
     if(!this.readable)
