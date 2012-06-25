@@ -44,7 +44,7 @@ es.through = function (write, end) {
     return !stream.paused
   }
 
-  this.on('end', function () {
+  stream.on('end', function () {
     stream.readable = false
     if(!(stream.writable || stream.readable))
       stream.destroy()
