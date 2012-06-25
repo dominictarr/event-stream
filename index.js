@@ -46,7 +46,7 @@ es.through = function (write, end) {
 
   stream.on('end', function () {
     stream.readable = false
-    if(!(stream.writable || stream.readable))
+    if(!stream.writable)
       stream.destroy()
   })
 
@@ -65,9 +65,9 @@ es.through = function (write, end) {
     I'm gonna emit 'close' and change then otherwise act as 'end'
   */
   stream.destroy = function () {
-    stream.emit('close')
     ended = true
     stream.writable = stream.readable = false
+    stream.emit('close')
   }
   stream.pause = function () {
     stream.paused = true
