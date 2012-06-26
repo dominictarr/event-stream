@@ -43,11 +43,15 @@ es.through = function (write, end) {
     write.call(this, data)
     return !stream.paused
   }
-
+  //this will be registered as the first 'end' listener
+  //must call destroy next tick, to make sure we're after any
+  //stream piped from here. 
   stream.on('end', function () {
     stream.readable = false
     if(!stream.writable)
-      stream.destroy()
+      process.nextTick(function () {
+        stream.destroy()
+      })
   })
 
   stream.end = function (data) {
@@ -114,7 +118,11 @@ es.merge = function (/*streams...*/) {
   stream.write = function (data) {
     this.emit('data', data)
   }
-
+  stream.destroy = function () {
+    merge.forEach(function (e) {
+      if(e.destroy) e.destroy()
+    })
+  }
   return stream
 }
 
@@ -128,15 +136,21 @@ es.writeArray = function (done) {
     throw new Error('function writeArray (done): done must be function')
 
   var a = new Stream ()
-    , array = []
+    , array = [], isDone = false
   a.write = function (l) {
     array.push(l)
   }
   a.end = function () {
+    isDone = true
     done(null, array)
   }
   a.writable = true
   a.readable = false
+  a.destroy = function () {
+    a.writable = a.readable = false
+    if(isDone) return
+    done(new Error('destroyed befor end'), array)
+  }
   return a
 }
 
@@ -147,6 +161,7 @@ es.readArray = function (array) {
   var stream = new Stream()
     , i = 0
     , paused = false
+    , ended = false
  
   stream.readable = true  
   stream.writable = false
@@ -155,17 +170,22 @@ es.readArray = function (array) {
     throw new Error('event-stream.read expects an array')
   
   stream.resume = function () {
+    if(ended) return
     paused = false
     var l = array.length
-    while(i < l && !paused) {
+    while(i < l && !paused && !ended) {
       stream.emit('data', array[i++])
     }
-    if(i == l)
-      stream.emit('end'), stream.readable = false
+    if(i == l && !ended)
+      ended = true, stream.readable = false, stream.emit('end')
   }
   process.nextTick(stream.resume)
   stream.pause = function () {
      paused = true
+  }
+  stream.destroy = function () {
+    ended = true
+    stream.emit('close')
   }
   return stream
 }
@@ -393,8 +413,7 @@ es.duplex = function (writer, reader) {
 
   thepipe.__defineGetter__('writable', function () { return writer.writable })
   thepipe.__defineGetter__('readable', function () { return reader.readable })
-
-  ;['write', 'end', 'close'].forEach(function (func) {
+  ;['write', 'end', 'destroy'].forEach(function (func) {
     thepipe[func] = function () {
       return writer[func].apply(writer, arguments)
     }
@@ -426,13 +445,6 @@ es.duplex = function (writer, reader) {
     args.unshift('end')
     thepipe.emit.apply(thepipe, args)
   })
-
-  thepipe.destroy = function () {
-    if(reader.destroy)
-      reader.destroy()
-    if(writer.destroy)
-      writer.destroy()
-  }
 
   return thepipe
 }
@@ -565,22 +577,14 @@ es.join = function (str) {
   if('function' === typeof str)
     return es.wait(str)
 
-  var stream = new Stream()
   var first = true
-  stream.readable = stream.writable = true
-  stream.write = function (data) {
+  return es.through(function (data) {
     if(!first)
-      stream.emit('data', str)
+      this.emit('data', str)
     first = false
-    stream.emit('data', data)
+    this.emit('data', data)
     return true
-  }
-  stream.end = function (data) {
-    if(data)
-      this.write(data)
-    this.emit('end')
-  }
-  return stream
+  })
 }
 
 
@@ -591,18 +595,12 @@ es.join = function (str) {
 es.wait = function (callback) {
   var stream = new Stream()
   var body = ''
-  stream.readable = true
-  stream.writable = true
-  stream.write = function (data) { body += data }
-  stream.end = function (data) {
-    if(data)
-      body += data
-    if(callback)
-      callback(null, body)
-    stream.emit('data', body)
-    stream.emit('end')
-  }
-  return stream
+  return es.through(function (data) { body += data },
+    function () {
+      stream.emit('data', body)
+      stream.emit('end')
+      if(callback) callback(null, body)
+    })
 }
 
 //
