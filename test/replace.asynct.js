@@ -30,16 +30,13 @@ exports ['fizz buzz'] = function (test) {
 exports ['fizz buzz replace'] = function (test) {
   var split = es.split(/(1)/)
 
-  var replace = es.replace('7', 'seven')
   
-  es.connect(split, 
-    replace, 
-//    es.log('aeounh'), 
-    es.join(function (err, string) {
+  split
+    .pipe(es.replace('7', 'seven'))
+    .pipe(es.join(function (err, string) {
       it(string).equal(fizz7buzz) 
       test.done()
-    })
-  )
+    }))
 
   split.write(fizzbuzz)
   split.end()
