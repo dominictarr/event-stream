@@ -521,12 +521,14 @@ es.gate = function (shut) {
 
 es.parse = function () { 
   return es.through(function (data) {
+    var obj
     try {
       if(data) //ignore empty lines
-        this.emit('data', JSON.parse(data.toString()))
+        obj = JSON.parse(data.toString())
     } catch (err) {
-      console.error(err, 'attemping to parse:', data)
+      return console.error(err, 'attemping to parse:', data)
     }
+    this.emit('data', obj)
   })
 }
 //
