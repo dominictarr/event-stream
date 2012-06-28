@@ -35,10 +35,10 @@ es.through = function (write, end) {
   //use custom end function
   : end 
   )
-  var ended = false
+  var ended = false, destroyed = false
   var stream = new Stream()
   stream.readable = stream.writable = true
-  
+  stream.paused = false  
   stream.write = function (data) {
     write.call(this, data)
     return !stream.paused
@@ -55,7 +55,7 @@ es.through = function (write, end) {
   })
 
   stream.end = function (data) {
-    if(ended) return
+    if(ended) throw new Error('cannot call end twice')
     ended = true
     if(arguments.length) stream.write(data)
     this.writable = false
@@ -69,6 +69,8 @@ es.through = function (write, end) {
     I'm gonna emit 'close' and change then otherwise act as 'end'
   */
   stream.destroy = function () {
+    if(destroyed) return
+    destroyed = true
     ended = true
     stream.writable = stream.readable = false
     stream.emit('close')
@@ -77,9 +79,10 @@ es.through = function (write, end) {
     stream.paused = true
   }
   stream.resume = function () {
-    if(stream.paused)
+    if(stream.paused) {
+      stream.paused = false
       stream.emit('drain')
-    stream.paused = false
+    }
   }
   return stream
 }
