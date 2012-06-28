@@ -13,7 +13,8 @@
   "devDependencies": {
     "asynct": "*",
     "it-is": "1",
-    "ubelt": "~2.9"
+    "ubelt": "~2.9",
+    "macgyver": "1"
   },
   "scripts": {
     "test": "asynct test/"
