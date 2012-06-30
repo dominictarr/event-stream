@@ -5,7 +5,7 @@ var es = require('../')
   , fs = require('fs')
   , Stream = require('stream').Stream
 
-exports ['pipeable'] = function (test) {
+exports ['es.split() works like String#split'] = function (test) {
   var readme = join(__filename)
     , expected = fs.readFileSync(readme, 'utf-8').split('\n')
     , cs = es.split()
@@ -29,9 +29,8 @@ exports ['pipeable'] = function (test) {
         if(v)
           it(actual[k]).like(v)
       })
-      console.log('88888888888888888888888!!!') 
       test.done()
-    }
+  }
   a.writable = true
   
   fs.createReadStream(readme, {flags: 'r'}).pipe(cs)
