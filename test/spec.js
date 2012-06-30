@@ -1,60 +1,115 @@
-
 /*
   assert that data is called many times
   assert that end is called eventually
+
+  assert that when stream enters pause state,
+  on drain is emitted eventually.
 */
 
 var macgyver = require('macgyver')
 var es = require('..')
 var it = require('it-is').style('colour')
-var mac = macgyver()
 
-process.on('exit', mac.validate)
-
-var stream = es.through()
-
-function noop () {}
-
-/*
-  actually, this spec is not quite right.
-  write should not be called after end has returned.
-
-  which is slightly different to the semantics of this.
- */
-
-function onDrain() {console.log('drain')}
+function applySpec (mac, stream) {
+  function noop () {}
   var paused = false
-stream.end = mac(stream.end).once()
+  function drain() {
+    paused = false
+    console.log('drain!')
+  }  
+  stream.end = mac(stream.end).once()
+  var onDrain = mac(drain).never()
+
+  stream.pause = mac(stream.pause)
+    .isPassed(function () {
+      if(paused) return
+      console.log('entered pause state by pause()')
+      paused = true
+      onDrain.again()
+    })
+
+  stream.on('drain', onDrain)
   stream.write = 
     mac(stream.write)
-    .beforeReturns(stream.end)
+    .throws(function (err, threw) {
+      it(threw).equal(!stream.writable)
+    })
     .returns(function (written) {
-        it(written)
-          .typeof('boolean')     //be strict.
-          .equal(!stream.paused) //expose pause state. must be consistant.
+      it(written)
+        .typeof('boolean')     //be strict.
+        .equal(!stream.paused) //expose pause state. must be consistant.
 
-        if(!paused && !written) {
-          //after write returns false, it must emit drain eventually.
-          console.log('expect drain')
-          stream.once('drain', mac(onDrain).once())
-        }
-        paused = !written
-      })
-var onClose = mac(noop).once()
-var onEnd   = mac(noop).once().before(onClose)
-var onData  = mac(noop).before(onEnd)
+      if(!paused && !written) {
+        //after write returns false, it must emit drain eventually.
+        console.log('entered pause state by write() === false')
+        onDrain.again()
+      }
+      paused = !written
+    })
 
-stream.on('close', onClose)
-stream.on('end', onEnd)
-stream.on('data', onData)
+  var onClose = mac(noop).once()
+  var onEnd   = mac(noop).once().before(onClose)
+  var onData  = mac(noop).before(onEnd)
 
-stream.write(1)
-stream.write(1)
-stream.pause()
-stream.write(1)
-stream.resume()
-stream.write(1)
-stream.end(2) //this will call write()
+  stream.on('close', onClose)
+  stream.on('end', onEnd)
+  stream.on('data', onData)
+}
+
+exports['simple stream'] = function (test) {
+
+  var mac = macgyver()
+  var stream = es.through()
+  applySpec(mac, stream)
+
+    stream.write(1)
+    stream.write(1)
+    stream.pause()
+    stream.write(1)
+    stream.resume()
+    stream.write(1)
+    stream.end(2) //this will call write()
+
+    process.nextTick(function () {
+      mac.validate()
+      test.done()
+    })
+    
+}
+
+exports['throw on write when !writable'] = function (test) {
+
+  var mac = macgyver()
+  var stream = es.through()
+  applySpec(mac, stream)
+
+  stream.write(1)
+  stream.write(1)
+  stream.end(2) //this will call write()
+  stream.write(1) //this will be throwing..., but the spec will catch it.
+
+  process.nextTick(function () {
+    mac.validate()
+    test.done()
+  })
+  
+}
+
+exports['end fast'] = function (test) {
+
+  var mac = macgyver()
+  var stream = es.through()
+  applySpec(mac, stream)
+
+  stream.end() //this will call write()
+
+  process.nextTick(function () {
+    mac.validate()
+    test.done()
+  })
+  
+}
+
 
 /*
   okay, that was easy enough, whats next?
