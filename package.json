@@ -14,7 +14,7 @@
     "asynct": "*",
     "it-is": "1",
     "ubelt": "~2.9",
-    "macgyver": "1"
+    "macgyver": "~1.4"
   },
   "scripts": {
     "test": "asynct test/"
