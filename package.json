@@ -1,6 +1,6 @@
 {
   "name": "event-stream",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "construct pipes of streams of events",
   "homepage": "http://github.com/dominictarr/event-stream",
   "repository": {
