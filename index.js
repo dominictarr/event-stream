@@ -6,86 +6,11 @@
 
 var Stream = require('stream').Stream
   , es = exports
+  , through = require('through')
 
 es.Stream = Stream //re-export Stream from core
-
-// through
-//
-// a stream that does nothing but re-emit the input.
-// useful for aggregating a series of changing but not ending streams into one stream)
-
-es.through = function (write, end) {
-  write = write || function (data) { this.emit('data', data) }
-  end = (
-    'sync'== end || !end
-  //use sync end. (default)
-  ? function () { this.emit('end') }
-  : 'async' == end || end === true 
-  //use async end.
-  //must eventually call drain if paused.
-  //else will not end.
-  ? function () {
-      if(!this.paused)
-        return this.emit('end')
-     var self = this
-     this.once('drain', function () {
-        self.emit('end')
-      })
-    }
-  //use custom end function
-  : end 
-  )
-  var ended = false, destroyed = false
-  var stream = new Stream()
-  stream.readable = stream.writable = true
-  stream.paused = false  
-  stream.write = function (data) {
-    write.call(this, data)
-    return !stream.paused
-  }
-  //this will be registered as the first 'end' listener
-  //must call destroy next tick, to make sure we're after any
-  //stream piped from here. 
-  stream.on('end', function () {
-    stream.readable = false
-    if(!stream.writable)
-      process.nextTick(function () {
-        stream.destroy()
-      })
-  })
-
-  stream.end = function (data) {
-    if(ended) throw new Error('cannot call end twice')
-    ended = true
-    if(arguments.length) stream.write(data)
-    this.writable = false
-    end.call(this)
-    if(!this.readable)
-      this.destroy()
-  }
-  /*
-    destroy is called on a writable stream when the upstream closes.
-    it's basically END but something has gone wrong.
-    I'm gonna emit 'close' and change then otherwise act as 'end'
-  */
-  stream.destroy = function () {
-    if(destroyed) return
-    destroyed = true
-    ended = true
-    stream.writable = stream.readable = false
-    stream.emit('close')
-  }
-  stream.pause = function () {
-    stream.paused = true
-  }
-  stream.resume = function () {
-    if(stream.paused) {
-      stream.paused = false
-      stream.emit('drain')
-    }
-  }
-  return stream
-}
+es.through = through.through
+es.from = through.from
 
 // buffered
 //
@@ -100,6 +25,7 @@ es.through = function (write, end) {
 //
 // combine multiple streams into a single stream.
 // will emit end only once
+
 es.concat = //actually this should be called concat
 es.merge = function (/*streams...*/) {
   var toMerge = [].slice.call(arguments)
@@ -199,6 +125,7 @@ es.readArray = function (array) {
 //
 // the function must take: (count, callback) {...
 //
+
 es.readable = function (func, continueOnError) {
   var stream = new Stream()
     , i = 0
@@ -245,8 +172,8 @@ es.readable = function (func, continueOnError) {
      paused = true
   }
   stream.destroy = function () {
-    stream.emit('close')
     stream.emit('end')
+    stream.emit('close')
     ended = true
   }
   return stream
@@ -285,14 +212,13 @@ es.map = function (mapper) {
         return inNext = false, stream.emit.apply(stream, args)
       }
       args.shift() //drop err
-      if (args.length){
+      if (args.length) {
         args.unshift('data')
         r = stream.emit.apply(stream, args)
       }
       if(inputs == outputs) {
         if(paused) paused = false, stream.emit('drain') //written all the incoming events
-        if(ended)
-          stream.end()
+        if(ended) end()
       }
       inNext = false
     }
@@ -301,31 +227,45 @@ es.map = function (mapper) {
     try {
       //catch sync errors and handle them like async errors
       var written = mapper.apply(null, args)
-      if(written === false) paused = true
-      return written
+      paused = (written === false)
+      return !paused
     } catch (err) {
       //if the callback has been called syncronously, and the error
       //has occured in an listener, throw it again.
       if(inNext)
         throw err
       next(err)
-      return true
+      return !paused
     }
   }
 
-  stream.end = function () {
-    var args = [].slice.call(arguments)
+  function end (data) {
     //if end was called with args, write it, 
     ended = true //write will emit 'end' if ended is true
-    if(args.length)
-      return stream.write.apply(emitter, args)
+    if(data !== undefined)
+      return stream.write(data)
     else if (inputs == outputs) //wait for processing
-      stream.emit('end')
+      stream.emit('end'), stream.destroy()
+  }
+
+  stream.end = function (data) {
+    if(ended) return
+    end()
   }
 
   stream.destroy = function () {
     ended = destroyed = true
     stream.writable = stream.readable = paused = false
+    process.nextTick(function () {
+      stream.emit('close')
+    })
+  }
+  stream.pause = function () {
+    paused = true
+  }
+
+  stream.resume = function () {
+    paused = false
   }
 
   return stream
@@ -596,12 +536,11 @@ es.join = function (str) {
 //
 
 es.wait = function (callback) {
-  var stream = new Stream()
   var body = ''
   return es.through(function (data) { body += data },
     function () {
-      stream.emit('data', body)
-      stream.emit('end')
+      this.emit('data', body)
+      this.emit('end')
       if(callback) callback(null, body)
     })
 }

@@ -8,13 +8,15 @@
     "url": "git://github.com/dominictarr/event-stream.git"
   },
   "dependencies": {
-    "optimist": "0.2"
+    "optimist": "0.2",
+    "through": "0",
+    "from": "0"
   },
   "devDependencies": {
     "asynct": "*",
     "it-is": "1",
     "ubelt": "~2.9",
-    "macgyver": "~1.5"
+    "stream-spec": "0"
   },
   "scripts": {
     "test": "asynct test/"
