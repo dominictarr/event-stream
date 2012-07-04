@@ -1,6 +1,9 @@
 var es = require('../')
   , it = require('it-is').style('colour')
   , d = require('ubelt')
+  , spec = require('stream-spec')
+
+var next = process.nextTick
 
 var fizzbuzz = '12F4BF78FB11F1314FB1617F19BF2223FB26F2829FB3132F34BF3738FB41F4344FB4647F49BF5253FB56F5859FB6162F64BF6768FB71F7374FB7677F79BF8283FB86F8889FB9192F94BF9798FB'
   , fizz7buzz = '12F4BFseven8FB11F1314FB161sevenF19BF2223FB26F2829FB3132F34BF3seven38FB41F4344FB464sevenF49BF5253FB56F5859FB6162F64BF6seven68FBseven1Fseven3seven4FBseven6sevensevenFseven9BF8283FB86F8889FB9192F94BF9seven98FB'
@@ -17,8 +20,7 @@ exports ['fizz buzz'] = function (test) {
   }) //array of multiples of 3 < 100
 
   var reader = es.readArray(readThis)
-
-  var join = es.join(function (err, string){
+  var join = es.wait(function (err, string){
     it(string).equal(fizzbuzz)
     test.done()
   })
@@ -29,14 +31,18 @@ exports ['fizz buzz'] = function (test) {
 
 exports ['fizz buzz replace'] = function (test) {
   var split = es.split(/(1)/)
-
-  
+  var replace = es.replace('7', 'seven')
+  var x = spec(replace).through()
   split
-    .pipe(es.replace('7', 'seven'))
+    .pipe(replace)
     .pipe(es.join(function (err, string) {
       it(string).equal(fizz7buzz) 
-      test.done()
     }))
+
+    replace.on('close', function () {
+      x.validate()
+      test.done()
+    })
 
   split.write(fizzbuzz)
   split.end()

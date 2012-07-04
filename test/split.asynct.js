@@ -4,6 +4,7 @@ var es = require('../')
   , join = require('path').join
   , fs = require('fs')
   , Stream = require('stream').Stream
+  , spec = require('stream-spec')
 
 exports ['es.split() works like String#split'] = function (test) {
   var readme = join(__filename)
@@ -11,6 +12,7 @@ exports ['es.split() works like String#split'] = function (test) {
     , cs = es.split()
     , actual = []
     , ended = false
+    , x = spec(cs).through()
 
   var a = new Stream ()
   
@@ -29,12 +31,16 @@ exports ['es.split() works like String#split'] = function (test) {
         if(v)
           it(actual[k]).like(v)
       })
-      test.done()
+      //give the stream time to close
+      process.nextTick(function () {
+        test.done()
+        x.validate()
+      })
   }
   a.writable = true
   
   fs.createReadStream(readme, {flags: 'r'}).pipe(cs)
-  cs.pipe(a)  
+  cs.pipe(a) 
   
 }
 
