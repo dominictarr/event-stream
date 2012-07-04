@@ -16,7 +16,7 @@
     "asynct": "*",
     "it-is": "1",
     "ubelt": "~2.9",
-    "stream-spec": "0"
+    "stream-spec": "~0.0.2"
   },
   "scripts": {
     "test": "asynct test/"
