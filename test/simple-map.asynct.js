@@ -32,18 +32,6 @@ function readStream(stream, done) {
 
 } 
 
-function onExit(validate) {
-  process.listeners('exit').unshift(function () {
-    try {validate()} catch (err) {
-      console.error('VALIDATION ERR')
-      console.error(err.stack)
-//      test.equal(err, null)
-    }
-  })
-}
-
-
-
 //call sink on each write,
 //and complete when finished.
 
@@ -114,7 +102,7 @@ exports ['simple map applied to a stream'] = function (test) {
     cb(null, data * 2)
   })
 
-  onExit(spec(doubler).through().validate)
+  spec(doubler).through().validateOnExit()
 
   //a map is only a middle man, so it is both readable and writable
   
