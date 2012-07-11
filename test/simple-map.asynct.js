@@ -47,10 +47,6 @@ function onExit(validate) {
 //call sink on each write,
 //and complete when finished.
 
-function to (sink, complete) {
-  
-}
-
 function pauseStream (prob, delay) { 
   var pauseIf = (
       'number' == typeof prob 
@@ -69,8 +65,7 @@ function pauseStream (prob, delay) {
     : delay
   )   
 
-  return es.through(function (data) {
-    
+  return es.through(function (data) {    
     if(!this.paused && pauseIf()) {
       console.log('PAUSE STREAM PAUSING')
       this.pause()
@@ -104,8 +99,8 @@ exports ['simple map'] = function (test) {
     this.emit('data', data * 2)
   }) 
 
-  onExit(spec(map).basic().pausable().validate)
-  onExit(spec(pause).basic().pausable().validate)
+  spec(map).through().validateOnExit()
+  spec(pause).through().validateOnExit()
 
   fs.pipe(map).pipe(pause).pipe(ts)
 }
@@ -119,7 +114,7 @@ exports ['simple map applied to a stream'] = function (test) {
     cb(null, data * 2)
   })
 
-  onExit(spec(doubler).basic().validate)
+  onExit(spec(doubler).through().validate)
 
   //a map is only a middle man, so it is both readable and writable
   
@@ -151,8 +146,8 @@ exports['pipe two maps together'] = function (test) {
 
   doubler1.pipe(doubler2)
   
-  onExit(spec(doubler1).basic().validate)
-  onExit(spec(doubler2).basic().validate)
+  spec(doubler1).through().validateOnExit()
+  spec(doubler2).through().validateOnExit()
 
   readStream(doubler2, function (err, output) {
     it(output).deepEqual(input.map(function (j) {
@@ -184,7 +179,7 @@ exports ['map will not call end until the callback'] = function (test) {
     })
   })
 
-  onExit(spec(ticker).basic().validate)
+  spec(ticker).through().validateOnExit()
 
   ticker.write('x')
   ticker.end() 
@@ -238,18 +233,18 @@ exports ['do not emit drain if not paused'] = function (test) {
     u.delay(callback)(null, 1)
     return true
   })
-  console.log(map) 
-  onExit(spec(map).basic().pausable().validate)
+  
+  spec(map).through().pausable().validateOnExit()
 
   map.on('drain', function () {
     it(false).ok('should not emit drain unless the stream is paused')
   })
+
   it(map.write('hello')).equal(true)
   it(map.write('hello')).equal(true)
   it(map.write('hello')).equal(true)
   setTimeout(function () {map.end()},10)
   map.on('end', test.done)
-
 }
 
 exports ['emits drain if paused, when all '] = function (test) {
@@ -265,7 +260,7 @@ exports ['emits drain if paused, when all '] = function (test) {
     return false
   })
 
-  onExit(spec(map).basic().pausable().validate)
+  spec(map).through().validateOnExit()
 
   map.on('drain', function () {
     drained = true
@@ -306,7 +301,7 @@ exports ['map applied to a stream with filtering'] = function (test) {
     test.done()
   })
   
-  onExit(spec(doubler).basic().pausable().validate)
+  spec(doubler).through().validateOnExit()
 
   writeArray(input, doubler)
   
@@ -327,7 +322,7 @@ exports ['simple mapSync applied to a stream'] = function (test) {
     test.done()
   })
   
-  onExit(spec(doubler).basic().pausable().validate)
+  spec(doubler).through().validateOnExit()
 
   writeArray(input, doubler)
   
@@ -351,7 +346,8 @@ exports ['mapSync applied to a stream with filtering'] = function (test) {
     test.done()
   })
   
-  onExit(spec(doubler).basic().pausable().validate)
+  spec(doubler).through().validateOnExit()
+
   writeArray(input, doubler)
   
 }
