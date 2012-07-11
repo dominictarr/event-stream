@@ -242,10 +242,11 @@ es.map = function (mapper) {
   function end (data) {
     //if end was called with args, write it, 
     ended = true //write will emit 'end' if ended is true
+    stream.writable = false
     if(data !== undefined)
       return stream.write(data)
-    else if (inputs == outputs) //wait for processing
-      stream.emit('end'), stream.destroy()
+    else if (inputs == outputs) //wait for processing 
+      stream.readable = false, stream.emit('end'), stream.destroy() 
   }
 
   stream.end = function (data) {
