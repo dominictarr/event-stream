@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "optimist": "0.2",
-    "through": "0",
-    "from": "0"
+    "through": "0.0.4",
+    "from": "~0"
   },
   "devDependencies": {
     "asynct": "*",
