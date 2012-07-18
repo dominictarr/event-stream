@@ -134,6 +134,27 @@ Replace all occurences of `from` with `to`. `from` may be a `String` or a `RegEx
 Works just like `string.split(from).join(to)`, but streaming.
 
 
+## parse
+
+Convienience function for parsing JSON chunks. For newline seperated JSON,
+use with `es.split`
+
+``` js
+fs.createReadStream(filename)
+  .pipe(es.split()) //defaults to lines.
+  .pipe(es.parse())
+```
+
+## stringify
+
+convert javascript objects into lines of text. The text will have whitespace escaped and have a `\n` appended, so it will be compatible with `es.parse`
+
+``` js
+objectStream
+  .pipe(es.stringify())
+  .pipe(fs.createWriteStream(filename))
+```
+
 ##readable (asyncFunction) 
 
 create a readable stream (that respects pause) from an async function.  
