@@ -355,8 +355,16 @@ es.child = function (child) {
 es.duplex = function (writer, reader) {
   var thepipe = new Stream()
 
-  thepipe.__defineGetter__('writable', function () { return writer.writable })
-  thepipe.__defineGetter__('readable', function () { return reader.readable })
+  Object.defineProperty(thepipe, "writable", {
+    get: function () {
+      return writer.writable
+    }
+  })
+  Object.defineProperty(thepipe, "readable", {
+    get: function () {
+      return reader.readable
+    }
+  })
   ;['write', 'end', 'destroy'].forEach(function (func) {
     thepipe[func] = function () {
       return writer[func].apply(writer, arguments)
