@@ -492,7 +492,9 @@ es.parse = function () {
     } catch (err) {
       return console.error(err, 'attemping to parse:', data)
     }
-    this.emit('data', obj)
+    //ignore lines that where only whitespace.
+    if(obj !== undefined)
+      this.emit('data', obj)
   })
 }
 //
