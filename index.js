@@ -482,6 +482,8 @@ es.gate = function (shut) {
 //
 // parse
 //
+// must be used after es.split() to ensure that each chunk represents a line
+// source.pipe(es.split()).pipe(es.parse())
 
 es.parse = function () { 
   return es.through(function (data) {
