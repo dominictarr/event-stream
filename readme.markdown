@@ -265,6 +265,19 @@ It is assumed that the two streams are connected to each other in some way.
   es.duplex(grep.stdin, grep.stdout)
 ```
 
+Optionally reverse the read direction
+
+``` js
+var read = someReadStream()
+  , write = someWriteStream()
+  , duplex = es.duplex(read, write, {
+    reverse: true
+  })
+
+// data being emitted on the duplex
+// will emit data on the read stream rather then the other way around
+otherStream.pipe(duplex).pipe(otherStream)
+
 ## child (child_process)
 
 Create a through stream from a child process ...
