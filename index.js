@@ -352,7 +352,7 @@ es.child = function (child) {
 // duplex -- pipe into one stream and out another
 //
 
-es.duplex = function (writer, reader) {
+es.duplex = function (writer, reader, options) {
   var thepipe = new Stream()
 
   Object.defineProperty(thepipe, "writable", {
@@ -382,11 +382,19 @@ es.duplex = function (writer, reader) {
   })
 
   ;['data', 'close'].forEach(function (event) {
-    reader.on(event, function () {
-      var args = [].slice.call(arguments)
-      args.unshift(event)
-      thepipe.emit.apply(thepipe, args)
-    })
+    if (options && options.reverse === true) {
+      thepipe.on(event, function () {
+        var args = [].slice.call(arguments)
+        args.unshift(event)
+        reader.emit.apply(reader, args)
+      })
+    } else {
+      reader.on(event, function () {
+        var args = [].slice.call(arguments)
+        args.unshift(event)
+        thepipe.emit.apply(thepipe, args)
+      })
+    }
   })
   //only emit end once
   var ended = false
