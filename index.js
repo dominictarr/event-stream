@@ -504,8 +504,8 @@ es.parse = function () {
 //
 
 es.stringify = function () { 
-  return es.mapSync(function (e){
-    return JSON.stringify(e) + '\n'
+  return es.mapSync(function (e){ 
+    return JSON.stringify(Buffer.isBuffer(e) ? e.toString() : e) + '\n'
   }) 
 }
 
