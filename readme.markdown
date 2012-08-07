@@ -27,7 +27,7 @@ NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that i
 
 if(!module.parent) {
   var es = require('event-stream')
-  es.connect(                         //connect streams together with `pipe`
+  es.pipeline(                         //connect streams together with `pipe`
     process.openStdin(),              //open stdin
     es.split(),                       //split stream to break on newlines
     es.map(function (data, callback) {//turn this async function into a stream
@@ -108,7 +108,7 @@ Break up a stream and reassemble it so that each line is a chunk. matcher may be
 Example, read every line in a file ...
 
 ``` js
-  es.connect(
+  es.pipeline(
     fs.createReadStream(file, {flags: 'r'}),
     es.split(),
     es.map(function (line, cb) {
@@ -208,17 +208,18 @@ all `data` events are stored in an array, which is passed to the callback when t
   reader.pipe(writer)
 ```
 
-## connect (stream1,...,streamN)
+## pipeline (stream1,...,streamN)
 
-Connect multiple Streams together into one stream.  
-`connect` will return a Stream. This stream will write to the first stream,
-and will emit data from the last stream. 
+Turn a pipeline into a single stream. `pipeline` returns a stream that writes to the first stream
+and reads from the last stream. 
 
 Listening for 'error' will recieve errors from all streams inside the pipe.
 
+> `connect` is an alias for `pipeline`.
+
 ``` js
 
-  es.connect(                         //connect streams together with `pipe`
+  es.pipeline(                         //connect streams together with `pipe`
     process.openStdin(),              //open stdin
     es.split(),                       //split stream to break on newlines
     es.map(function (data, callback) {//turn this async function into a stream
@@ -257,7 +258,7 @@ Takes a writable stream and a readable stream and makes them appear as a readabl
 
 It is assumed that the two streams are connected to each other in some way.  
 
-(This is used by `connect` and `child`.)
+(This is used by `pipeline` and `child`.)
 
 ``` js
   var grep = cp.exec('grep Stream')
@@ -393,7 +394,7 @@ remits the input stream.
 
 ``` js
   es.sidestream( //will log the stream to a file
-    es.connect(
+    es.pipeline(
       es.mapSync(function (j) {return JSON.stringify(j) + '/n'}),
       fs.createWruteStream(file, {flags: 'a'})
     )
