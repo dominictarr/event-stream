@@ -1,4 +1,5 @@
 //filter will reemit the data if cb(err,pass) pass is truthy
+
 // reduce is more tricky
 // maybe we want to group the reductions or emit progress updates occasionally
 // the most basic reduce just emits one 'data' event after it has recieved 'end'
@@ -301,7 +302,7 @@ es.log = function (name) {
 //
 // combine multiple streams together so that they act as a single stream
 //
-
+es.pipeline = 
 es.pipe = es.connect = function () {
 
   var streams = [].slice.call(arguments)
@@ -518,7 +519,7 @@ es.stringify = function () {
 // I need this for shadow-npm so it's only relatively small json files.
 
 es.replace = function (from, to) {
-  return es.connect(es.split(from), es.join(to))
+  return es.pipeline(es.split(from), es.join(to))
 } 
 
 //
@@ -589,6 +590,9 @@ var setup = function (args) {
 }
 
 es.pipeable = function () {
+  console.error('warn: event-stream. I have decided that pipeable is a kitchen-sick and will remove soon if no objections')
+  console.error('please post an issue if you actually use this. -- dominictarr')
+
   if(process.title != 'node')
     return console.error('cannot use es.pipeable in the browser')
   //(require) inside brackets to fool browserify, because this does not make sense in the browser.
@@ -620,7 +624,7 @@ es.pipeable = function () {
     streams.unshift(es.split())
     //streams.unshift()
     streams.push(process.stdout)
-    var c = es.connect.apply(null, streams)
+    var c = es.pipeline.apply(null, streams)
     process.openStdin().pipe(c) //there
     return c
 
