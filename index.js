@@ -8,10 +8,13 @@
 var Stream = require('stream').Stream
   , es = exports
   , through = require('through')
+  , from = require('from')
+  , duplex = require('duplexer')
 
 es.Stream = Stream //re-export Stream from core
 es.through = through.through
-es.from = through.from
+es.from = from
+es.duplex = duplex
 
 // buffered
 //
