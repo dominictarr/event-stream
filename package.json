@@ -10,6 +10,7 @@
   "dependencies": {
     "optimist": "0.2",
     "through": "0.0.4",
+    "duplexer": "0.0.1",
     "from": "~0"
   },
   "devDependencies": {
