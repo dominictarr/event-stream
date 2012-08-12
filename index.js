@@ -16,15 +16,6 @@ es.through = through.through
 es.from = from
 es.duplex = duplex
 
-// buffered
-//
-// same as a through stream, but won't emit a chunk until the next tick.
-// does not support any pausing. intended for testing purposes.
-
-// XXX: rewrite this. this is crap. but do I actually use it? maybe just throw it away?
-// okay, it's used in snob. so... throw this out and let snob use a legacy version. (fix later/never)
-
-
 // merge / concat
 //
 // combine multiple streams into a single stream.
@@ -82,7 +73,7 @@ es.writeArray = function (done) {
   a.destroy = function () {
     a.writable = a.readable = false
     if(isDone) return
-    done(new Error('destroyed befor end'), array)
+    done(new Error('destroyed before end'), array)
   }
   return a
 }
@@ -350,59 +341,6 @@ es.child = function (child) {
 
   return es.duplex(child.stdin, child.stdout)
 
-}
-
-//
-// duplex -- pipe into one stream and out another
-//
-
-es.duplex = function (writer, reader) {
-  var thepipe = new Stream()
-
-  Object.defineProperty(thepipe, "writable", {
-    get: function () {
-      return writer.writable
-    }
-  })
-  Object.defineProperty(thepipe, "readable", {
-    get: function () {
-      return reader.readable
-    }
-  })
-  ;['write', 'end', 'destroy'].forEach(function (func) {
-    thepipe[func] = function () {
-      return writer[func].apply(writer, arguments)
-    }
-  })
-
-  ;['resume', 'pause'].forEach(function (func) {
-    thepipe[func] = function () { 
-      thepipe.emit(func)
-      if(reader[func])
-        return reader[func].apply(reader, arguments)
-      else
-        reader.emit(func)
-    }
-  })
-
-  ;['data', 'close'].forEach(function (event) {
-    reader.on(event, function () {
-      var args = [].slice.call(arguments)
-      args.unshift(event)
-      thepipe.emit.apply(thepipe, args)
-    })
-  })
-  //only emit end once
-  var ended = false
-  reader.on('end', function () {
-    if(ended) return
-    ended = true
-    var args = [].slice.call(arguments)
-    args.unshift('end')
-    thepipe.emit.apply(thepipe, args)
-  })
-
-  return thepipe
 }
 
 es.split = function (matcher) {
