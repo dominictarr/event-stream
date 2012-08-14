@@ -12,7 +12,7 @@ var Stream = require('stream').Stream
   , duplex = require('duplexer')
 
 es.Stream = Stream //re-export Stream from core
-es.through = through.through
+es.through = through
 es.from = from
 es.duplex = duplex
 
