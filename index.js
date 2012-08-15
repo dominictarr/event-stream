@@ -446,6 +446,7 @@ es.parse = function () {
 //
 
 es.stringify = function () { 
+  var Buffer = require('buffer').Buffer
   return es.mapSync(function (e){ 
     return JSON.stringify(Buffer.isBuffer(e) ? e.toString() : e) + '\n'
   }) 
