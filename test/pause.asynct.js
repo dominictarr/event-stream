@@ -6,20 +6,21 @@ var es  = require('../')
 exports ['gate buffers when shut'] = function (test) {
 
   var hundy = d.map(1,100, d.id)
-    , gate = es.gate()
+    , gate = es.pause()
     , ten = 10
   es.connect(
     es.readArray(hundy),
-    //es.log('after readArray'),
+    es.log('after readArray'),
     gate,
     //es.log('after gate'),
     es.map(function (num, next) {
       //stick a map in here to check that gate never emits when open
-      it(gate.isShut()).equal(false)
-      
+      it(gate.paused).equal(false)
+      console.log('data', num)
       if(!--ten) {
-        gate.shut()
-        d.delay(gate.open,10)()
+        console.log('PAUSE')
+        gate.pause()//.resume()
+        d.delay(gate.resume.bind(gate), 10)()
         ten = 10
       }
         
@@ -32,6 +33,6 @@ exports ['gate buffers when shut'] = function (test) {
     })
   )
 
-  gate.open()
+  gate.resume()
 
 }
