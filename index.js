@@ -11,12 +11,14 @@ var Stream = require('stream').Stream
   , from = require('from')
   , duplex = require('duplexer')
   , map = require('map-stream')
+  , pause = require('pause-stream')
 
 es.Stream = Stream //re-export Stream from core
 es.through = through
 es.from = from
 es.duplex = duplex
 es.map = map
+es.pause = pause
 
 // merge / concat
 //
