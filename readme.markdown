@@ -230,26 +230,15 @@ Listening for 'error' will recieve errors from all streams inside the pipe.
     )
 ```
 
-## gate (isShut=true) 
+## pause  () 
 
-If the gate is `shut`, buffer the stream.  
-All calls to write will return false (pause upstream),  
-and end will not be sent downstream.  
+A stream that buffers all chunks when paused.
 
-If the gate is open, let the stream through.  
-
-Named `shut` instead of close, because close is already kinda meaningful with streams.  
-
-Gate is useful for holding off processing a stream until some resource (i.e. a database, or network connection) is ready.  
 
 ``` js
-
-  var gate = es.gate()
-  
-  gate.open() //allow the gate to stream
-  
-  gate.close() //buffer the stream, also do not allow 'end' 
-
+  var ps = es.pause()
+  ps.pause() //buffer the stream, also do not allow 'end' 
+  ps.resume() //allow chunks through
 ```
 
 ## duplex (writeStream, readStream)
@@ -294,42 +283,7 @@ readStream.pipe(es.join(function (err, text) {
 
 ```
 
-## pipeable (streamCreatorFunction,...)
 
-The arguments to pipable must be functions that return  
-instances of Stream or async functions.  
-(If a function is returned, it will be turned into a Stream  
-with `es.map`.)
-
-Here is the first example rewritten to use `pipeable`.
-
-``` js
-//examples/pretty_pipeable.js
-var inspect = require('util').inspect
-
-if(!module.parent)
-  require('event-stream').pipeable(function () {
-    return function (data, callback) {
-      try {
-        data = JSON.parse(data)
-      } catch (err) {}              //pass non JSON straight through!
-      callback(null, inspect(data))
-      }
-    })  
-  })
-```
-
-``` bash
-
-curl -sS registry.npmjs.org/event-stream | node pipeable_pretty.js
-
-## or, turn the pipe into a server!
-
-node pipeable_pretty.js --port 4646
-
-curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
-
-```
 ## compatible modules:
 
   * https://github.com/felixge/node-growing-file  
@@ -383,55 +337,3 @@ curl -sS registry.npmjs.org/event-stream | curl -sSNT- localhost:4646
   * https://github.com/polotek/evented-twitter/issues/22  
     twitter client
 
-
-<!--
-TODO, the following methods are not implemented yet.
-
-## sidestream (stream1,...,streamN)
-
-Pipes the incoming stream to many writable streams.  
-remits the input stream.
-
-``` js
-  es.sidestream( //will log the stream to a file
-    es.pipeline(
-      es.mapSync(function (j) {return JSON.stringify(j) + '/n'}),
-      fs.createWruteStream(file, {flags: 'a'})
-    )
-```
-
-## merge (stream1,...,streamN)
-
-Create a readable stream that merges many streams into one.
-
-(Not implemented yet.)
-
-### another pipe example
-
-SEARCH SUBDIRECTORIES FROM CWD  
-FILTER IF NOT A GIT REPO  
-MAP TO GIT STATUS --porclean + the directory  
-FILTER IF EMPTY STATUS  
-process.stdout  
-that will show all the repos which have unstaged changes  
-
-## TODO & applications
-
-  * buffer -- buffer items
-  * rate limiter
-  * save to database
-    * couch
-    * redis
-    * mongo
-    * file(s)
-  * read from database
-    * couch
-    * redis
-    * mongo
-    * file(s)
-  * recursive
-    * search filesystem
-    * scrape web pages (load pages, parse for links, etc)
-    * module dependencies
-  
--->
