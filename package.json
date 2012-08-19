@@ -10,7 +10,7 @@
   "dependencies": {
     "optimist": "0.2",
     "through": "0.0.4",
-    "duplexer": "0.0.1",
+    "duplexer": "~0.0.2",
     "from": "~0",
     "map-stream": "0.0.1",
     "pause-stream": "0.0.4"
