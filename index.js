@@ -12,6 +12,7 @@ var Stream = require('stream').Stream
   , duplex = require('duplexer')
   , map = require('map-stream')
   , pause = require('pause-stream')
+  ,  split = require('split')
 
 es.Stream = Stream //re-export Stream from core
 es.through = through
@@ -19,6 +20,7 @@ es.from = from
 es.duplex = duplex
 es.map = map
 es.pause = pause
+es.split = split
 
 // merge / concat
 //
@@ -253,29 +255,6 @@ es.child = function (child) {
 
   return es.duplex(child.stdin, child.stdout)
 
-}
-
-es.split = function (matcher) {
-  var soFar = ''
-  if (!matcher)
-    matcher = '\n'
-
-  return es.through(function (buffer) { 
-    var stream = this
-      , pieces = (soFar + buffer).split(matcher)
-    soFar = pieces.pop()
-
-    pieces.forEach(function (piece) {
-      stream.emit('data', piece)
-    })
-
-    return true
-  },
-  function () {
-    if(soFar)
-      this.emit('data', soFar)  
-    this.emit('end')
-  })
 }
 
 //
