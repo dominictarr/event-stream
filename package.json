@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "optimist": "0.2",
-    "through": "0.0.4",
+    "through": "1.0.0",
     "duplexer": "~0.0.2",
     "from": "~0",
     "map-stream": "0.0.1",
