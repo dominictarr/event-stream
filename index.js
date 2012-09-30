@@ -4,7 +4,6 @@
 // maybe we want to group the reductions or emit progress updates occasionally
 // the most basic reduce just emits one 'data' event after it has recieved 'end'
 
-
 var Stream = require('stream').Stream
   , es = exports
   , through = require('through')
@@ -162,7 +161,6 @@ es.readable = function (func, continueOnError) {
         stream.emit('error', err)    
       }
     })
-  
   }
   stream.resume = function () {
     paused = false
@@ -240,9 +238,10 @@ es.pipe = es.connect = function () {
     thepipe.emit.apply(thepipe, args)
   }
   
-  streams.forEach(function (stream) {
-    stream.on('error', onerror)
-  })
+  //es.duplex already reemits the error from the first and last stream.
+  //add a listener for the inner streams in the pipeline.
+  for(var i = 1; i < streams.length - 1; i ++)
+    streams[i].on('error', onerror)
 
   return thepipe
 }
