@@ -336,38 +336,6 @@ es.wait = function (callback) {
     })
 }
 
-//
-// helper to make your module into a unix pipe
-// simply add 
-// 
-// if(!module.parent)
-//  require('event-stream').pipable(asyncFunctionOrStreams)
-// 
-// asyncFunctionOrStreams may be one or more Streams or if it is a function, 
-// it will be automatically wrapped in es.map
-//
-// then pipe stuff into from the command line!
-// 
-// curl registry.npmjs.org/event-stream | node hello-pipeable.js | grep whatever
-//
-// etc!
-//
-// also, start pipeable running as a server!
-//
-// > node hello-pipeable.js --port 44444
-// 
-
-var setup = function (args) {
-  return args.map(function (f) {
-    var x = f()
-      if('function' === typeof x)
-        return es.map(x)
-      return x
-    })
-}
-
 es.pipeable = function () {
-  console.error('warn: event-stream. I have decided that pipeable is a kitchen-sick and will remove soon if no objections')
-  console.error('please post an issue if you actually use this. -- dominictarr')
   throw new Error('[EVENT-STREAM] es.pipeable is deprecated')
 }
