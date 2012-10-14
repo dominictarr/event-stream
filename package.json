@@ -8,7 +8,6 @@
     "url": "git://github.com/dominictarr/event-stream.git"
   },
   "dependencies": {
-    "optimist": "0.2",
     "through": "1.1.0",
     "duplexer": "~0.0.2",
     "from": "~0",
