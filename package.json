@@ -13,7 +13,8 @@
     "from": "~0",
     "map-stream": "0.0.1",
     "pause-stream": "0.0.4",
-    "split": "0.0.0"
+    "split": "0.0.0",
+    "stream-combiner": "0.0.0"
   },
   "devDependencies": {
     "asynct": "*",

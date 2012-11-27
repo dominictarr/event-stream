@@ -11,7 +11,8 @@ var Stream = require('stream').Stream
   , duplex = require('duplexer')
   , map = require('map-stream')
   , pause = require('pause-stream')
-  ,  split = require('split')
+  , split = require('split')
+  , pipeline = require('stream-combiner')
 
 es.Stream = Stream //re-export Stream from core
 es.through = through
@@ -20,7 +21,7 @@ es.duplex = duplex
 es.map = map
 es.pause = pause
 es.split = split
-
+es.pipeline = es.connect = es.pipe = pipeline
 // merge / concat
 //
 // combine multiple streams into a single stream.
@@ -126,7 +127,8 @@ es.readArray = function (array) {
 // the function must take: (count, callback) {...
 //
 
-es.readable = function (func, continueOnError) {
+es.readable =
+function (func, continueOnError) {
   var stream = new Stream()
     , i = 0
     , paused = false
@@ -179,7 +181,6 @@ es.readable = function (func, continueOnError) {
 }
 
 
-
 //
 // map sync
 //
@@ -205,46 +206,6 @@ es.log = function (name) {
   })
 }
 
-//
-// combine multiple streams together so that they act as a single stream
-//
-es.pipeline = 
-es.pipe = es.connect = function () {
-
-  var streams = [].slice.call(arguments)
-    , first = streams[0]
-    , last = streams[streams.length - 1]
-    , thepipe = es.duplex(first, last)
-
-  if(streams.length == 1)
-    return streams[0]
-  else if (!streams.length)
-    throw new Error('connect called with empty args')
-
-  //pipe all the streams together
-
-  function recurse (streams) {
-    if(streams.length < 2)
-      return
-    streams[0].pipe(streams[1])
-    recurse(streams.slice(1))  
-  }
-  
-  recurse(streams)
- 
-  function onerror () {
-    var args = [].slice.call(arguments)
-    args.unshift('error')
-    thepipe.emit.apply(thepipe, args)
-  }
-  
-  //es.duplex already reemits the error from the first and last stream.
-  //add a listener for the inner streams in the pipeline.
-  for(var i = 1; i < streams.length - 1; i ++)
-    streams[i].on('error', onerror)
-
-  return thepipe
-}
 
 //
 // child -- pipe through a child process
