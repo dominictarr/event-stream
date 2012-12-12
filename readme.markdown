@@ -273,7 +273,7 @@ joins chunks of a stream into a single string.
 takes an optional callback, which will be passed the 
 complete string when it receives the 'end' event.
 
-also, emits a simgle 'data' event.
+also, emits a single 'data' event.
 
 ``` js
 
