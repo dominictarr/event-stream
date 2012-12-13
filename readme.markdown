@@ -2,6 +2,9 @@
 
 <img src=https://secure.travis-ci.org/dominictarr/event-stream.png?branch=master>
 
+[![browser status](http://ci.testling.com/dominictarr/event-stream.png)]
+(http://ci.testling.com/dominictarr/event-stream)
+
 [Streams](http://nodejs.org/api/streams.html "Stream") are nodes best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
