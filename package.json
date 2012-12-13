@@ -25,6 +25,27 @@
   "scripts": {
     "test": "asynct test/"
   },
+  "testling": {
+    "files": "test/*.js",
+    "browsers": {
+      "ie": [
+        8,
+        9
+      ],
+      "firefox": [
+        13
+      ],
+      "chrome": [
+        20
+      ],
+      "safari": [
+        5.1
+      ],
+      "opera": [
+        12
+      ]
+    }
+  },
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://bit.ly/dominictarr)",
   "optionalDependencies": {},
   "engines": {
