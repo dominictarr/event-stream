@@ -340,3 +340,4 @@ exports ['mapSync applied to a stream with filtering'] = function (test) {
   
 }
 
+require('./helper')(module)

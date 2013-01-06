@@ -28,3 +28,4 @@ exports ['writer is writable, but not readable'] = function (test) {
 
   test.done()
 }
+require('./helper')(module)

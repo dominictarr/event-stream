@@ -18,3 +18,4 @@ exports.merge = function (t) {
   es.merge(r1, r2).pipe(writer)
 
 }
+require('./helper')(module)

@@ -5,12 +5,18 @@ var es = require('../')
 
 exports ['read an array'] = function (test) {
 
+
+  console.log('readable')
+  return test.end()
   var readThis = u.map(3, 6, 100, u.id) //array of multiples of 3 < 100
+
+  console.log('readable')
 
   var reader = 
     es.readable(function (i, callback) {
       if(i >= readThis.length)
         return this.emit('end')
+      console.log('readable')
       callback(null, readThis[i])
     })
 
@@ -165,3 +171,5 @@ exports ['emit multiple errors, with 2nd parameter (continueOnError)'] = functio
   reader.pipe(writer)
 }
 */
+
+require('./helper')(module)

@@ -86,3 +86,4 @@ exports ['read one item per tick'] = function (test) {
   })
 
 }
+require('./helper')(module)

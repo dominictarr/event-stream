@@ -49,3 +49,4 @@ exports['3 pipe do not duplicate errors'] = function (test) {
 
 }
 
+require('./helper')(module)

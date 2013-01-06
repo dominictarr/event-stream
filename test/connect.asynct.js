@@ -80,3 +80,7 @@ exports ['connect returns a stream'] = function (test) {
     )
   
 }
+
+
+require('./helper')(module)
+

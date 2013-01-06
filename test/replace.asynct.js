@@ -48,3 +48,4 @@ exports ['fizz buzz replace'] = function (test) {
   split.end()
 
 }
+require('./helper')(module)

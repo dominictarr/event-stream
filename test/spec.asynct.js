@@ -83,3 +83,4 @@ exports['end fast'] = function (test) {
 */
 
 
+require('./helper')(module)

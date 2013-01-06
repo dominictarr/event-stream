@@ -36,3 +36,4 @@ exports ['gate buffers when shut'] = function (test) {
   gate.resume()
 
 }
+require('./helper')(module)

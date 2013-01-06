@@ -44,3 +44,4 @@ exports ['es.split() works like String#split'] = function (test) {
   
 }
 
+require('./helper')(module)

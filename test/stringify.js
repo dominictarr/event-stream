@@ -12,3 +12,4 @@ exports['handle buffer'] = function (t) {
   }).write(new Buffer('HELLO'))
 
 }
+require('./helper')(module)
