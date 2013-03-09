@@ -125,9 +125,9 @@ Example, read every line in a file ...
 `split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` paremeter is ignored.
 [String#split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split)
 
-## join (seperator)
+## join (separator)
 
-create a through stream that emits `seperator` between each chunk, just like Array#join.
+create a through stream that emits `separator` between each chunk, just like Array#join.
 
 (for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
 
@@ -139,7 +139,7 @@ Works just like `string.split(from).join(to)`, but streaming.
 
 ## parse
 
-Convienience function for parsing JSON chunks. For newline seperated JSON,
+Convienience function for parsing JSON chunks. For newline separated JSON,
 use with `es.split`
 
 ``` js
