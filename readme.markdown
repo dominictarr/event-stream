@@ -5,7 +5,7 @@
 [![browser status](http://ci.testling.com/dominictarr/event-stream.png)]
 (http://ci.testling.com/dominictarr/event-stream)
 
-[Streams](http://nodejs.org/api/streams.html "Stream") are nodes best and most misunderstood idea, and 
+[Streams](http://nodejs.org/api/strems.html "Stream") are nodes best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
 Normally, streams are only used of IO,  
