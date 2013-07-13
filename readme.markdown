@@ -18,7 +18,7 @@ because Streams are like Arrays, but laid out in time, rather than in memory.
 
 <em>All the `event-stream` functions return instances of `Stream`</em>.
 
-Stream API docs: [nodejs.org/api/streams](http://nodejs.org/api/streams.html "Stream")
+Stream API docs: [nodejs.org/api/streams](http://nodejs.org/api/stream.html "Stream")
 
 NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
