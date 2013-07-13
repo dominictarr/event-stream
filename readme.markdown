@@ -18,9 +18,11 @@ because Streams are like Arrays, but laid out in time, rather than in memory.
 
 <em>All the `event-stream` functions return instances of `Stream`</em>.
 
-Stream API docs: [nodejs.org/api/streams](http://nodejs.org/api/stream.html "Stream")
+`event-stream` creates 
+[0.8 streams](https://github.com/joyent/node/blob/v0.8/doc/api/stream.markdown)
+, which are compatible with [0.10 streams](http://nodejs.org/api/stream.html "Stream")
 
-NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
+>NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
 ###[simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
 
