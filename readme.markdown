@@ -47,7 +47,7 @@ run it ...
 curl -sS registry.npmjs.org/event-stream | node pretty.js
 ```
  
-[node Stream documentation](http://nodejs.org/api/streams.html)
+[node Stream documentation](http://nodejs.org/api/stream.html)
 
 ## through (write?, end?)
 
