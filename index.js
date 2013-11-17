@@ -13,6 +13,7 @@ var Stream = require('stream').Stream
   , pause = require('pause-stream')
   , split = require('split')
   , pipeline = require('stream-combiner')
+  , reduce = require('stream-reduce')
 
 es.Stream = Stream //re-export Stream from core
 es.through = through
@@ -22,6 +23,7 @@ es.map = map
 es.pause = pause
 es.split = split
 es.pipeline = es.connect = es.pipe = pipeline
+es.reduce = reduce
 // merge / concat
 //
 // combine multiple streams into a single stream.
