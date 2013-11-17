@@ -288,4 +288,20 @@ readStream.pipe(es.join(function (err, text) {
 
 ```
 
+## reduce (syncFunction, initial)
+
+pass a sync reduce function and an initial value
+
+``` js
+var initial = 0
+  , reduceFn = function(acc, data) {
+      return acc + data.length;
+  }
+
+process.stdin.pipe(es.reduce(reduceFn, initial))
+  .on("data", function(length) {
+    console.log("stdin size:", length);
+  });
+```
+
 
