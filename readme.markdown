@@ -288,4 +288,22 @@ readStream.pipe(es.join(function (err, text) {
 
 ```
 
+# Other Stream Modules
 
+These modules are not included as a part of *EventStream* but may be
+useful when working with streams.
+
+## [reduce (syncFunction, initial)](https://github.com/parshap/node-stream-reduce)
+
+Like `Array.prototype.reduce` but for streams. Given a sync reduce
+function and an initial value it will return a through stream that emits
+a single data event with the reduced value once the input stream ends.
+
+``` js
+var reduce = require("stream-reduce");
+process.stdin.pipe(reduce(function(acc, data) {
+  return acc + data.length;
+}, 0)).on("data", function(length) {
+  console.log("stdin size:", length);
+});
+```
