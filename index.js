@@ -37,6 +37,10 @@ es.merge = function (/*streams...*/) {
   toMerge.forEach(function (e) {
     e.pipe(stream, {end: false})
     var ended = false
+    if(e.ended){
+	  ended=true
+	  endCount++
+	}
     e.on('end', function () {
       if(ended) return
       ended = true
