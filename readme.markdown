@@ -282,7 +282,7 @@ also, emits a single 'data' event.
 
 ``` js
 
-readStream.pipe(es.join(function (err, text) {
+readStream.pipe(es.wait(function (err, text) {
   // have complete text here.
 }))
 
