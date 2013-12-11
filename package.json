@@ -1,6 +1,6 @@
 {
   "name": "event-stream",
-  "version": "3.0.18",
+  "version": "3.0.19",
   "description": "construct pipes of streams of events",
   "homepage": "http://github.com/dominictarr/event-stream",
   "repository": {
@@ -9,19 +9,19 @@
   },
   "dependencies": {
     "through": "~2.3.1",
-    "duplexer": "~0.0.2",
+    "duplexer": "~0.1.1",
     "from": "~0",
     "map-stream": "~0.0.3",
-    "pause-stream": "0.0.10",
+    "pause-stream": "0.0.11",
     "split": "0.2",
-    "stream-combiner": "0.0.0"
+    "stream-combiner": "~0.0.3"
   },
   "devDependencies": {
     "asynct": "*",
     "it-is": "1",
-    "ubelt": "~2.9",
-    "stream-spec": "~0.2",
-    "tape": "~0.1.5"
+    "ubelt": "~3.2.2",
+    "stream-spec": "~0.3.5",
+    "tape": "~2.3.0"
   },
   "scripts": {
     "test": "asynct test/",
