@@ -129,9 +129,23 @@ Example, read every line in a file ...
 
 ## join (separator)
 
-create a through stream that emits `separator` between each chunk, just like Array#join.
+Create a through stream that emits `separator` between each chunk, just like Array#join.
 
 (for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
+
+## merge (stream1,...,streamN)
+> concat → merge
+
+Merges streams into one and returns it.
+Incoming data will be emitted as soon it comes into - no ordering will be applied (for example: `data1 data1 data2 data1 data2` - where `data1` and `data2` is data from two streams).
+Counts how many streams was passed to it and emits end only when all streams emitted end.
+
+```js
+es.merge(
+  process.stdout,
+  process.stderr
+).pipe(fs.createWriteStream('output.log'));
+```
 
 ## replace (from, to)
 
