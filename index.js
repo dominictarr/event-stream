@@ -21,7 +21,7 @@ es.from = from
 es.duplex = duplex
 es.map = map
 es.pause = pause
-esseries = series
+es.series = series
 es.split = split
 es.pipeline = es.connect = es.pipe = pipeline
 // merge / concat
