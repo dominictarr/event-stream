@@ -14,7 +14,8 @@
     "map-stream": "~0.1.0",
     "pause-stream": "0.0.11",
     "split": "0.2",
-    "stream-combiner": "~0.0.4"
+    "stream-combiner": "~0.0.4",
+    "stream-series": "~0.1.0"
   },
   "devDependencies": {
     "asynct": "*",
