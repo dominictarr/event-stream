@@ -8,7 +8,7 @@
 [Streams](http://nodejs.org/api/stream.html "Stream") are node's best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
 
-Normally, streams are only used of IO,  
+Normally, streams are only used for IO,  
 but in event stream we send all kinds of objects down the pipe.  
 If your application's <em>input</em> and <em>output</em> are streams,  
 shouldn't the <em>throughput</em> be a stream too?  
