@@ -32,7 +32,7 @@ es.merge = function (/*streams...*/) {
   var toMerge = [].slice.call(arguments)
   var stream = new Stream()
   var endCount = 0
-  stream.setMaxListeners(toMerge.length)
+  stream.setMaxListeners(Math.max(10, toMerge.length))
   stream.writable = stream.readable = true
 
   toMerge.forEach(function (e) {
