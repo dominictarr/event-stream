@@ -31,6 +31,7 @@ es.concat = //actually this should be called concat
 es.merge = function (/*streams...*/) {
   var toMerge = [].slice.call(arguments)
   var stream = new Stream()
+  stream.setMaxListeners(0) // allow adding more than 11 streams
   var endCount = 0
   stream.writable = stream.readable = true
 
