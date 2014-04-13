@@ -32,16 +32,16 @@ because Streams are like Arrays, but laid out in time, rather than in memory.
 
 if(!module.parent) {
   var es = require('event-stream')
-  es.pipeline(                         //connect streams together with `pipe`
-    process.openStdin(),              //open stdin
-    es.split(),                       //split stream to break on newlines
-    es.map(function (data, callback) {//turn this async function into a stream
-      callback(null
-        , inspect(JSON.parse(data)))  //render it nicely
-    }),
-    process.stdout                    // pipe it to stdout !
-    )
-  }
+  var inspect = require('util').inspect
+
+  process.stdin                        //connect streams together with `pipe`
+    .pipe(es.split())                  //split stream to break on newlines
+    .pipe(es.map(function (data, cb) { //turn this async function into a stream
+      cb(null
+        , inspect(JSON.parse(data)))   //render it nicely
+    }))
+    .pipe(process.stdout)              // pipe it to stdout !
+}
 ```
 run it ...
 
@@ -113,15 +113,12 @@ Break up a stream and reassemble it so that each line is a chunk. matcher may be
 Example, read every line in a file ...
 
 ``` js
-  es.pipeline(
-    fs.createReadStream(file, {flags: 'r'}),
-    es.split(),
-    es.map(function (line, cb) {
-       //do something with the line 
-       cb(null, line)
-    })
-  )
-
+fs.createReadStream(file, {flags: 'r'})
+  .pipe(es.split())
+  .pipe(es.map(function (line, cb) {
+    //do something with the line 
+    cb(null, line)
+  }))
 ```
 
 `split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` paremeter is ignored.
