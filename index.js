@@ -50,7 +50,7 @@ es.merge = function (/*streams...*/) {
     this.emit('data', data)
   }
   stream.destroy = function () {
-    merge.forEach(function (e) {
+    toMerge.forEach(function (e) {
       if(e.destroy) e.destroy()
     })
   }
