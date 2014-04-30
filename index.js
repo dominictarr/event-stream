@@ -13,6 +13,7 @@ var Stream = require('stream').Stream
   , pause = require('pause-stream')
   , split = require('split')
   , pipeline = require('stream-combiner')
+  , immediately = global.setImmediate || process.nextTick;
 
 es.Stream = Stream //re-export Stream from core
 es.through = through
@@ -152,7 +153,7 @@ function (func, continueOnError) {
     } else if (arguments.length > 1)
       stream.emit('data', data)
 
-    process.nextTick(function () {
+    immediately(function () {
       if(ended || paused || reading) return
       try {
         reading = true
