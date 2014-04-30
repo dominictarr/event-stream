@@ -152,7 +152,7 @@ function (func, continueOnError) {
     } else if (arguments.length > 1)
       stream.emit('data', data)
 
-    process.nextTick(function () {
+    setImmediate(function () {
       if(ended || paused || reading) return
       try {
         reading = true

@@ -23,7 +23,7 @@ exports ['read an array'] = function (test) {
   var writer = es.writeArray(function (err, array){
     if(err) throw err
     it(array).deepEqual(readThis)
-    test.done()     
+    test.done()
   })
 
   reader.pipe(writer)
@@ -117,6 +117,28 @@ exports['readable does not call read concurrently'] = function (test) {
   destination.on('end', test.done)
 }
 
+exports ['does not raise a warning: Recursive process.nextTick detected'] = function (test) {
+    var readThisDelayed;
+
+    u.delay(function () {
+        readThisDelayed = [1, 3, 5];
+    })();
+
+    es.readable(function (count, callback) {
+
+        if (readThisDelayed) {
+            var that = this;
+            readThisDelayed.forEach(function (item) {
+                that.emit('data', item);
+            });
+
+            this.emit('end');
+            test.done();
+        }
+
+        callback();
+    });
+};
 
 //
 // emitting multiple errors is not supported by stream.
