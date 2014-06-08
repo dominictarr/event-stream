@@ -54,7 +54,7 @@ curl -sS registry.npmjs.org/event-stream | node pretty.js
 ## through (write?, end?)
 
 Reemits data synchronously. Easy way to create syncronous through streams.
-Pass in an optional `write` and `end` methods. They will be called in the 
+Pass in optional `write` and `end` methods. They will be called in the 
 context of the stream. Use `this.pause()` and `this.resume()` to manage flow.
 Check `this.paused` to see current flow state. (write always returns `!this.paused`)
 
