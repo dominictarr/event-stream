@@ -53,12 +53,12 @@ curl -sS registry.npmjs.org/event-stream | node pretty.js
 
 ## through (write?, end?)
 
-Reemits data synchronously. Easy way to create syncronous through streams.
+Re-emits data synchronously. Easy way to create synchronous through streams.
 Pass in optional `write` and `end` methods. They will be called in the 
 context of the stream. Use `this.pause()` and `this.resume()` to manage flow.
 Check `this.paused` to see current flow state. (write always returns `!this.paused`)
 
-this function is the basis for most of the syncronous streams in `event-stream`.
+this function is the basis for most of the synchronous streams in `event-stream`.
 
 ``` js
 
@@ -74,7 +74,7 @@ es.through(function write(data) {
 
 ##map (asyncFunction)
 
-Create a through stream from an asyncronous function.  
+Create a through stream from an asynchronous function.  
 
 ``` js
 var es = require('event-stream')
