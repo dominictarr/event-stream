@@ -152,7 +152,7 @@ Works just like `string.split(from).join(to)`, but streaming.
 
 ## parse
 
-Convienience function for parsing JSON chunks. For newline separated JSON,
+Convenience function for parsing JSON chunks. For newline separated JSON,
 use with `es.split`
 
 ``` js
