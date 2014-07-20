@@ -146,7 +146,7 @@ es.merge(
 
 ## replace (from, to)
 
-Replace all occurences of `from` with `to`. `from` may be a `String` or a `RegExp`.  
+Replace all occurrences of `from` with `to`. `from` may be a `String` or a `RegExp`.  
 Works just like `string.split(from).join(to)`, but streaming.
 
 
