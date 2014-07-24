@@ -144,6 +144,12 @@ es.merge(
 ).pipe(fs.createWriteStream('output.log'));
 ```
 
+## series (stream1,...,streamN)
+
+Merges streams into one and returns it, where ordering matters.
+Data will be emitted in the order streams are passed in. Data from the second stream will not be emitted until the first stream has ended (for example: `data1 data1 data1 data2 data2` - where `data1` and `data2` is data from two streams).
+Emits end when all streams have ended.
+
 ## replace (from, to)
 
 Replace all occurrences of `from` with `to`. `from` may be a `String` or a `RegExp`.  

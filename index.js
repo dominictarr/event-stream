@@ -11,6 +11,7 @@ var Stream = require('stream').Stream
   , duplex = require('duplexer')
   , map = require('map-stream')
   , pause = require('pause-stream')
+  , series = require('stream-series')
   , split = require('split')
   , pipeline = require('stream-combiner')
   , immediately = global.setImmediate || process.nextTick;
@@ -21,6 +22,7 @@ es.from = from
 es.duplex = duplex
 es.map = map
 es.pause = pause
+es.series = series
 es.split = split
 es.pipeline = es.connect = es.pipe = pipeline
 // merge / concat
