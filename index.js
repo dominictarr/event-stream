@@ -225,13 +225,16 @@ es.child = function (child) {
 // must be used after es.split() to ensure that each chunk represents a line
 // source.pipe(es.split()).pipe(es.parse())
 
-es.parse = function () { 
+es.parse = function (options) {
+  var emitError = !!(options ? options.emitError : false)
   return es.through(function (data) {
     var obj
     try {
       if(data) //ignore empty lines
         obj = JSON.parse(data.toString())
     } catch (err) {
+      if (emitError)
+        return this.emit('error', err)
       return console.error(err, 'attemping to parse:', data)
     }
     //ignore lines that where only whitespace.

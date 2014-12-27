@@ -153,7 +153,9 @@ Works just like `string.split(from).join(to)`, but streaming.
 ## parse
 
 Convenience function for parsing JSON chunks. For newline separated JSON,
-use with `es.split`
+use with `es.split`.  By default it logs parsing errors by `console.error`;
+for another behaviour, transforms created by `es.parse({emitError: true})`
+will emit error events for exceptions thrown from `JSON.parse`, unmodified.
 
 ``` js
 fs.createReadStream(filename)
