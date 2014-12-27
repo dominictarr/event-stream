@@ -24,6 +24,7 @@
     "tape": "~2.3.0"
   },
   "scripts": {
+    "prepublish": "npm ls && npm test",
     "test": "asynct test/",
     "test_tap": "set -e; for t in test/*.js; do node $t; done"
   },
