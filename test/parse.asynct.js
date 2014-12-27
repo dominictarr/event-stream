@@ -14,8 +14,8 @@ exports ['es.parse() writes parsing errors with console.error'] = function (test
   parseStream.write('A')
 }
 
-exports ['es.parse({emitError: true(thy)}) emits error events from parsing'] = function (test) {
-  var parseStream = es.parse({emitError: 1})
+exports ['es.parse({error: true(thy)}) emits error events from parsing'] = function (test) {
+  var parseStream = es.parse({error: 1})
   var expectedError
   try {
     JSON.parse('A')

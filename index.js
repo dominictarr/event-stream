@@ -226,7 +226,7 @@ es.child = function (child) {
 // source.pipe(es.split()).pipe(es.parse())
 
 es.parse = function (options) {
-  var emitError = !!(options ? options.emitError : false)
+  var emitError = !!(options ? options.error : false)
   return es.through(function (data) {
     var obj
     try {
