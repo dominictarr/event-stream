@@ -265,15 +265,15 @@ Create a through stream from a child process ...
 ## wait (callback)
 
 waits for stream to emit 'end'.
-joins chunks of a stream into a single string. 
+joins chunks of a stream into a single string or buffer. 
 takes an optional callback, which will be passed the 
-complete string when it receives the 'end' event.
+complete string/buffer when it receives the 'end' event.
 
 also, emits a single 'data' event.
 
 ``` js
 
-readStream.pipe(es.wait(function (err, text) {
+readStream.pipe(es.wait(function (err, body) {
   // have complete text here.
 }))
 
