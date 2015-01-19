@@ -135,7 +135,7 @@ Create a through stream that emits `separator` between each chunk, just like Arr
 
 Merges streams into one and returns it.
 Incoming data will be emitted as soon it comes into - no ordering will be applied (for example: `data1 data1 data2 data1 data2` - where `data1` and `data2` is data from two streams).
-Counts how many streams was passed to it and emits end only when all streams emitted end.
+Counts how many streams were passed to it and emits end only when all streams emitted end.
 
 ```js
 es.merge(
