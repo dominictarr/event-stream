@@ -130,7 +130,7 @@ Create a through stream that emits `separator` between each chunk, just like Arr
 
 (for legacy reasons, if you pass a callback instead of a string, join is a synonym for `es.wait`)
 
-## merge (stream1,...,streamN)
+## merge (stream1,...,streamN) or merge (streamArray) 
 > concat → merge
 
 Merges streams into one and returns it.
@@ -142,6 +142,14 @@ es.merge(
   process.stdout,
   process.stderr
 ).pipe(fs.createWriteStream('output.log'));
+```
+
+It can also take an Array of streams as input like this: 
+```js
+es.merge([
+  process.stdout, 
+  process.stderr
+]).pipe(fs.createWriteStream('output.log'));
 ```
 
 ## replace (from, to)
