@@ -31,7 +31,7 @@ es.pipeline = es.connect = es.pipe = pipeline
 es.concat = //actually this should be called concat
 es.merge = function (/*streams...*/) {
   var toMerge = [].slice.call(arguments)
-  if (toMerge.length === 1 && (toMerge instanceof Array)) {
+  if (toMerge.length === 1 && (toMerge[0] instanceof Array)) {
     toMerge = toMerge[0] //handle array as arguments object
   }
   var stream = new Stream()
