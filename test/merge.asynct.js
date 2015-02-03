@@ -8,14 +8,22 @@ exports.merge = function (t) {
 
   var r1 = es.readArray(even)
   var r2 = es.readArray(odd)
+  var endCount = 0
 
   var writer = es.writeArray(function (err, array){
     if(err) throw err //unpossible
     it(array.sort()).deepEqual(even.concat(odd).sort())
-    t.done() 
+    if (++endCount === 2) t.done()
+  })
+
+  var writer2 = es.writeArray(function (err, array){
+    if(err) throw err //unpossible
+    it(array.sort()).deepEqual(even.concat(odd).sort())
+    if (++endCount === 2) t.done()
   })
 
   es.merge(r1, r2).pipe(writer)
+  es.merge([r1, r2]).pipe(writer2)
 
 }
 require('./helper')(module)
