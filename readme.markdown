@@ -147,8 +147,8 @@ es.merge(
 It can also take an Array of streams as input like this: 
 ```js
 es.merge([
-  process.stdout, 
-  process.stderr
+  fs.createReadStream('input1.txt'),
+  fs.createReadStream('input2.txt')
 ]).pipe(fs.createWriteStream('output.log'));
 ```
 
