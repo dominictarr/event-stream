@@ -24,7 +24,7 @@ because Streams are like Arrays, but laid out in time, rather than in memory.
 
 >NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
-###[simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
+### [simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
 
 ``` js
 
@@ -72,7 +72,7 @@ es.through(function write(data) {
 
 ```
 
-##map (asyncFunction)
+## map (asyncFunction)
 
 Create a through stream from an asynchronous function.  
 
@@ -181,7 +181,7 @@ objectStream
   .pipe(fs.createWriteStream(filename))
 ```
 
-##readable (asyncFunction) 
+## readable (asyncFunction) 
 
 create a readable stream (that respects pause) from an async function.  
 while the stream is not paused,  
@@ -206,7 +206,7 @@ you can also pass the data and the error to the callback.
 you may only call the callback once.  
 calling the same callback more than once will have no effect.  
 
-##readArray (array)
+## readArray (array)
 
 Create a readable stream from an Array.
 
