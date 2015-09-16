@@ -238,7 +238,7 @@ es.parse = function (options) {
     } catch (err) {
       if (emitError)
         return this.emit('error', err)
-      return console.error(err, 'attemping to parse:', data)
+      return console.error(err, 'attempting to parse:', data)
     }
     //ignore lines that where only whitespace.
     if(obj !== undefined)
