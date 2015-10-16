@@ -20,7 +20,7 @@ because Streams are like Arrays, but laid out in time, rather than in memory.
 
 `event-stream` creates 
 [0.8 streams](https://github.com/joyent/node/blob/v0.8/doc/api/stream.markdown)
-, which are compatible with [0.10 streams](http://nodejs.org/api/stream.html "Stream")
+, which are compatible with [0.10 streams](http://nodejs.org/api/stream.html "Stream").
 
 >NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
@@ -217,6 +217,12 @@ Just emit each item as a data event, respecting `pause` and `resume`.
     , reader = es.readArray([1,2,3])
 
   reader.pipe(...)
+```
+
+If you want the stream behave like a 0.10 stream you will need to wrap it using [`Readable.wrap()`](http://nodejs.org/api/stream.html#stream_readable_wrap_stream) function. Example:
+
+``` js
+	var s = new stream.Readable({objectMode: true}).wrap(es.readArray([1,2,3]));
 ```
 
 ## writeArray (callback)
