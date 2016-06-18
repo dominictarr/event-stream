@@ -192,14 +192,14 @@ function (func, continueOnError) {
 
 es.mapSync = function (sync) {
   return es.through(function write(data) {
+    var mappedData
     try {
-      var mappedData = sync(data)
-      if (typeof mappedData !== 'undefined')
-        this.emit('data', mappedData)
-    }
-    catch (err) {
+      mappedData = sync(data)
+    } catch (err) {
       this.emit('error', err)
     }
+    if (mappedData !== undefined)
+      this.emit('data', mappedData)
   })
 }
 
