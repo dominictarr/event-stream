@@ -196,7 +196,7 @@ es.mapSync = function (sync) {
     try {
       mappedData = sync(data)
     } catch (err) {
-      this.emit('error', err)
+      return this.emit('error', err)
     }
     if (mappedData !== undefined)
       this.emit('data', mappedData)
