@@ -52,7 +52,9 @@ es.merge = function (/*streams...*/) {
       })
     })
   } else {
-    process.nextTick(() => stream.emit('end'))
+    process.nextTick(function () {
+      stream.emit('end')
+    })
   }
   
   stream.write = function (data) {
