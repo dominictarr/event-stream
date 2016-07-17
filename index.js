@@ -39,17 +39,22 @@ es.merge = function (/*streams...*/) {
   var endCount = 0
   stream.writable = stream.readable = true
 
-  toMerge.forEach(function (e) {
-    e.pipe(stream, {end: false})
-    var ended = false
-    e.on('end', function () {
-      if(ended) return
-      ended = true
-      endCount ++
-      if(endCount == toMerge.length)
-        stream.emit('end')
+  if (toMerge.length) {
+    toMerge.forEach(function (e) {
+      e.pipe(stream, {end: false})
+      var ended = false
+      e.on('end', function () {
+        if(ended) return
+        ended = true
+        endCount ++
+        if(endCount == toMerge.length)
+          stream.emit('end')
+      })
     })
-  })
+  } else {
+    process.nextTick(() => stream.emit('end'))
+  }
+  
   stream.write = function (data) {
     this.emit('data', data)
   }
