@@ -1,9 +1,8 @@
 # EventStream
-
+<p>
 <img src=https://secure.travis-ci.org/dominictarr/event-stream.png?branch=master>
 
-[![browser status](http://ci.testling.com/dominictarr/event-stream.png)]
-(http://ci.testling.com/dominictarr/event-stream)
+[![browser status](http://ci.testling.com/dominictarr/event-stream.png)](http://ci.testling.com/dominictarr/event-stream)
 
 [Streams](http://nodejs.org/api/stream.html "Stream") are node's best and most misunderstood idea, and 
 _<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
@@ -17,6 +16,8 @@ The *EventStream* functions resemble the array functions,
 because Streams are like Arrays, but laid out in time, rather than in memory.  
 
 <em>All the `event-stream` functions return instances of `Stream`</em>.
+</p>
+
 
 `event-stream` creates 
 [0.8 streams](https://github.com/joyent/node/blob/v0.8/doc/api/stream.markdown)
