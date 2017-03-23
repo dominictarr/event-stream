@@ -37,6 +37,7 @@ es.merge = function (/*streams...*/) {
   var stream = new Stream()
   stream.setMaxListeners(0) // allow adding more than 11 streams
   var endCount = 0
+  stream.setMaxListeners(Math.max(10, toMerge.length))
   stream.writable = stream.readable = true
 
   if (toMerge.length) {
