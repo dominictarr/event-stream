@@ -41,6 +41,7 @@ es.merge = function (/*streams...*/) {
 
   if (toMerge.length) {
     toMerge.forEach(function (e) {
+      if(e == undefined) return
       e.pipe(stream, {end: false})
       var ended = false
       e.on('end', function () {
