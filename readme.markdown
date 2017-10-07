@@ -125,6 +125,18 @@ fs.createReadStream(file, {flags: 'r'})
 `split` takes the same arguments as `string.split` except it defaults to '\n' instead of ',', and the optional `limit` parameter is ignored.
 [String#split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split)
 
+**NOTE** Maintaining Line Breaks
+If you want to process each line of the stream, transform the data and reassemble and KEEP the line breaks the example will look like this
+```javascript
+fs.createReadStream(file, {flags: 'r'})
+  .pipe(es.split(/(\r?\n)/))
+  .pipe(es.map(function (line, cb) {
+    //do something with the line 
+    cb(null, line)
+  }))
+```
+This is mentioned in the [underlying documentation](https://www.npmjs.com/package/split#keep-matched-splitter) for the split npm package.
+
 ## join (separator)
 
 Create a through stream that emits `separator` between each chunk, just like Array#join.
