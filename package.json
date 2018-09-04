@@ -8,20 +8,20 @@
     "url": "git://github.com/dominictarr/event-stream.git"
   },
   "dependencies": {
-    "through": "~2.3.1",
-    "duplexer": "~0.1.1",
-    "from": "~0",
-    "map-stream": "~0.1.0",
-    "pause-stream": "0.0.11",
-    "split": "0.3",
-    "stream-combiner": "~0.0.4"
+    "duplexer": "^0.1.1",
+    "from": "^0.1.7",
+    "map-stream": "0.0.7",
+    "pause-stream": "^0.0.11",
+    "split": "^1.0.1",
+    "stream-combiner": "^0.2.2",
+    "through": "^2.3.8"
   },
   "devDependencies": {
-    "asynct": "*",
-    "it-is": "1",
-    "ubelt": "~3.2.2",
-    "stream-spec": "~0.3.5",
-    "tape": "~2.3.0"
+    "asynct": "^1.1.0",
+    "it-is": "^1.0.3",
+    "stream-spec": "^0.3.6",
+    "tape": "^4.9.1",
+    "ubelt": "^3.2.2"
   },
   "scripts": {
     "prepublish": "npm ls && npm test",
