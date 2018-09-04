@@ -1,7 +1,7 @@
 var es = require('..')
 
 process.stdin
-    .pipe(es.split())
+    .pipe(es.split(null, null, {trailing: false}))  // ignore trailing empty line
     .on('data', function (data) {
         console.log('data: ' + data)
     })
