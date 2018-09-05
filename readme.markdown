@@ -1,34 +1,21 @@
 # EventStream
-<p>
-<img src=https://secure.travis-ci.org/dominictarr/event-stream.png?branch=master>
 
-[![browser status](http://ci.testling.com/dominictarr/event-stream.png)](http://ci.testling.com/dominictarr/event-stream)
+[Streams](http://nodejs.org/api/stream.html "Stream") are node's best and most misunderstood idea, and EventStream is a toolkit to make creating and working with streams easy.
 
-[Streams](http://nodejs.org/api/stream.html "Stream") are node's best and most misunderstood idea, and 
-_<em>EventStream</em>_ is a toolkit to make creating and working with streams <em>easy</em>.  
+Normally, streams are only used for IO, but in event stream we send all kinds of objects down the pipe. If your application's input and output are streams,  
+shouldn't the throughput be a stream too?  
 
-Normally, streams are only used for IO,  
-but in event stream we send all kinds of objects down the pipe.  
-If your application's <em>input</em> and <em>output</em> are streams,  
-shouldn't the <em>throughput</em> be a stream too?  
+The *EventStream* functions resemble the array functions, because Streams are like Arrays, but laid out in time, rather than in memory.  
 
-The *EventStream* functions resemble the array functions,  
-because Streams are like Arrays, but laid out in time, rather than in memory.  
+All the `event-stream` functions return instances of `Stream`.
 
-<em>All the `event-stream` functions return instances of `Stream`</em>.
-</p>
-
-
-`event-stream` creates 
-[0.8 streams](https://github.com/joyent/node/blob/v0.8/doc/api/stream.markdown)
-, which are compatible with [0.10 streams](http://nodejs.org/api/stream.html "Stream").
+`event-stream` creates [0.8 streams](https://github.com/joyent/node/blob/v0.8/doc/api/stream.markdown), which are compatible with [0.10 streams](http://nodejs.org/api/stream.html "Stream").
 
 >NOTE: I shall use the term <em>"through stream"</em> to refer to a stream that is writable <em>and</em> readable.  
 
 ### [simple example](https://github.com/dominictarr/event-stream/blob/master/examples/pretty.js):
 
 ``` js
-
 //pretty.js
 
 if(!module.parent) {
