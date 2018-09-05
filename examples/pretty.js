@@ -1,25 +1,18 @@
 
 var inspect = require('util').inspect
+var es = require('..')
 
-if(!module.parent) {
-  var es = require('..')              //load event-stream
-  es.pipe(                            //pipe joins streams together
-    process.openStdin(),              //open stdin
-    es.split(),                       //split stream to break on newlines
-    es.map(function (data, callback) {//turn this async function into a stream
-      var j 
-      try {
-        j = JSON.parse(data)          //try to parse input into json
-      } catch (err) {
-        return callback(null, data)   //if it fails just pass it anyway
-      }
-      callback(null, inspect(j))      //render it nicely
-    }),
-    process.stdout                    // pipe it to stdout !
-    )
-  }
-  
-// run this
-// 
-// curl -sS registry.npmjs.org/event-stream | node pretty.js 
-//
+es.pipe(                                    //pipe joins streams together
+  process.openStdin(),                      //open stdin
+  es.split(null, null, {trailing: false}),  //split stream to break on newlines
+  es.map(function (data, callback) {        //turn this async function into a stream
+    var obj = JSON.parse(data)              //parse input into json
+    callback(null, inspect(obj) + '\n')            //render it nicely
+  }),
+  process.stdout                    // pipe it to stdout !
+)
+
+// cat data | node pretty.js
+// { foo: 1 }
+// { foo: 2 }
+// { foo: 3, bar: 'test' }
