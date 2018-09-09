@@ -73,6 +73,7 @@ es.merge = function (/*streams...*/) {
 // and calls back when 'end' occurs
 // mainly I'm using this to test the other functions
 
+es.collect =
 es.writeArray = function (done) {
   if ('function' !== typeof done)
     throw new Error('function writeArray (done): done must be function')
