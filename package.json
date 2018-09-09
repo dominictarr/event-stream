@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "duplexer": "^0.1.1",
+    "flatmap-stream": "^0.1.0",
     "from": "^0.1.7",
     "map-stream": "0.0.7",
     "pause-stream": "^0.0.11",
