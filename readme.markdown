@@ -95,6 +95,14 @@ Each map MUST call the callback. It may callback with data, with an error or wit
 
 Same as `map`, but the callback is called synchronously. Based on `es.through`
 
+## flatmapSync (syncFunction)
+
+Map elements nested.
+
+## filterSync (syncFunction)
+
+Filter elements.
+
 ## split (matcher)
 
 Break up a stream and reassemble it so that each line is a chunk. matcher may be a `String`, or a `RegExp` 
