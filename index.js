@@ -8,7 +8,6 @@ var Stream = require('stream').Stream
   , es = exports
   , through = require('through')
   , from = require('from')
-  , flatmap = require('flatmap-stream')
   , duplex = require('duplexer')
   , map = require('map-stream')
   , pause = require('pause-stream')
@@ -19,7 +18,6 @@ var Stream = require('stream').Stream
 es.Stream = Stream //re-export Stream from core
 es.through = through
 es.from = from
-es.flatmap = flatmap
 es.duplex = duplex
 es.map = map
 es.pause = pause
@@ -210,6 +208,32 @@ es.mapSync = function (sync) {
     }
     if (mappedData !== undefined)
       this.emit('data', mappedData)
+  })
+}
+
+//
+// filterSync
+//
+
+es.filterSync = function (test) {
+  return es.through(function(data){
+    var s = this
+    if (test(data)) {
+      s.queue(data)
+    }
+  });
+}
+
+//
+// flatmapSync
+//
+
+es.flatmapSync = function (mapper) {
+  return es.through(function(data) {
+    var s = this
+    data.forEach(function(e) {
+      s.queue(mapper(e))
+    })
   })
 }
 
