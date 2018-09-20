@@ -99,9 +99,29 @@ Same as `map`, but the callback is called synchronously. Based on `es.through`
 
 Map elements nested.
 
+``` js
+var es = require('event-stream')
+
+es.flatmapSync(function (data) {
+  //transform data
+  // ...
+  return data
+})
+
+```
+
 ## filterSync (syncFunction)
 
 Filter elements.
+
+``` js
+var es = require('event-stream')
+
+es.filterSync(function (data) {
+  return data > 0
+})
+
+```
 
 ## split (matcher)
 
