@@ -28,6 +28,9 @@
     "test": "asynct test/",
     "test_tap": "set -e; for t in test/*.js; do node $t; done"
   },
+  "keywords": [
+    "stream", "map", "flatmap", "filter", "split", "join", "merge", "replace"
+  ],
   "testling": {
     "files": "test/*.js",
     "browsers": {
