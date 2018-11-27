@@ -1,5 +1,7 @@
 # EventStream
 
+[![DepShield Badge](https://depshield.sonatype.org/badges/ChopperLee2011/event-stream/depshield.svg)](https://depshield.github.io)
+
 [Streams](http://nodejs.org/api/stream.html "Stream") are node's best and most misunderstood idea, and EventStream is a toolkit to make creating and working with streams easy.
 
 Normally, streams are only used for IO, but in event stream we send all kinds of objects down the pipe. If your application's input and output are streams,  shouldn't the throughput be a stream too?  
